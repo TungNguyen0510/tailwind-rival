@@ -7,7 +7,7 @@ import { createClient } from "@/utils/supabase/server";
 import { User } from "@supabase/supabase-js";
 import { notFound } from "next/navigation";
 
-const PlayPage = async ({ params }: { params: { id: string } }) => {
+const PlayPage = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
   const supabase = await createClient();
 
