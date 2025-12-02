@@ -2,7 +2,7 @@ import { adminAuthClient } from "@/utils/supabase/admin";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-const ProfilePage = async ({ params }: { params: { userId: string } }) => {
+const ProfilePage = async ({ params }: { params: Promise<{ userId: string }> }) => {
   const { userId } = await params;
 
   const { data, error } = await adminAuthClient.getUserById(userId);
