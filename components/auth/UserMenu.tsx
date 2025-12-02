@@ -14,8 +14,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 type UserMenuProps = {
   user: User;
@@ -29,13 +29,24 @@ const UserMenu = (props: UserMenuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Image
-          src={user.user_metadata.avatar_url}
-          alt="avatar"
-          width={36}
-          height={36}
-          className="rounded-full size-9 overflow-hidden cursor-pointe select-none"
-        />
+        <Avatar>
+          <AvatarImage
+            src={user.user_metadata.avatar_url}
+            alt="avatar"
+            width={36}
+            height={36}
+            className="rounded-full size-9 overflow-hidden select-none mt-0.5 cursor-pointer"
+          />
+          <AvatarFallback className="text-xs">
+            {user.user_metadata.full_name
+              ? user.user_metadata.full_name
+                .split(" ")
+                .map((n: string) => n[0])
+                .join("")
+                .slice(0, 2)
+              : "U"}
+          </AvatarFallback>
+        </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>{user.user_metadata.full_name}</DropdownMenuLabel>

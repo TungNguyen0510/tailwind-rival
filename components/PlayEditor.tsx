@@ -1,7 +1,6 @@
 "use client";
 
 import { usePlayContext } from "@/context/PlayContextProvider";
-// * monaco-editor
 import MonacoEditor from "@monaco-editor/react";
 
 import { useTheme } from "next-themes";
@@ -23,7 +22,7 @@ const Editor = ({ id }: { id: string }) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between p-1 px-4 border-b bg-card">
+      <div className="flex items-center justify-between p-1 px-4 border-b bg-card/50">
         <div className="flex gap-3 items-center">
           <span className="font-medium">Editor</span>
           <div className="flex gap-2">

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 function Header() {
   return (
-    <nav className="sticky top-0 left-0 w-full flex justify-center border-b border-b-foreground/10 h-12 bg-card antialiased">
+    <nav className="sticky top-0 left-0 w-full flex justify-center border-b border-b-foreground/10 h-12 bg-card/50 antialiased">
       <div className="w-full flex justify-between items-center p-2 px-10 text-sm">
         <div className="flex gap-10 justify-between items-center transition-colors">
           <div className="flex gap-5 items-center font-semibold text-lg">
@@ -18,7 +18,7 @@ function Header() {
 
           <div className="flex gap-5 items-center text-base">
             <Link href="/daily">
-              <Button variant="ghost" className="hover:scale-105">Daily targets</Button>
+              <Button variant="ghost" className="hover:scale-105">Daily challenges</Button>
             </Link>
             <Link href="/leaderboard">
               <Button variant="ghost" className="hover:scale-105">Leaderboard</Button>

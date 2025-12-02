@@ -113,15 +113,15 @@ const PlaygroundContent = () => {
 
   return (
     <div className="flex h-[calc(100vh-48px-40px)] max-h-[calc(100vh-48px-40px)] w-screen">
-      <div className="shrink flex-1 flex flex-col border-r max-w-[calc(100vw-865px)]">
+      <div className="shrink flex-1 flex flex-col border-r max-w-[calc(100vw-433px)] min-w-[432px]">
         <PlaygroundEditor />
       </div>
-      <div className="lg:max-w-[865px] min-w-[865px] flex max-h-[calc(100vh-48px-32px)]">
+      <div className="lg:max-w-[433px] min-w-[433px] flex max-h-[calc(100vh-48px-32px)]">
         <div className="flex-1">
-          <div className="flex items-center justify-between p-1 px-4 border-b border-r bg-card">
+          <div className="flex items-center justify-between p-1 px-4 border-b border-r bg-card/50">
             <span className="font-medium">Code output</span>
           </div>
-          <div className="flex flex-col gap-4 p-4 border-r h-full bg-card">
+          <div className="flex flex-col gap-4 p-4 border-r h-full bg-card/50">
             <PlaygroundIframe
               ref={iframeRef}
               key="Iframe Preview"
@@ -142,7 +142,6 @@ const PlaygroundContent = () => {
             </Button>
           </div>
         </div>
-        <div className="flex-1 bg-card h-full"></div>
       </div>
     </div>
   );
