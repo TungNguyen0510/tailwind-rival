@@ -12,10 +12,9 @@ import { redirect } from "next/navigation";
  */
 export const signInWithOAuth = async (provider: "github" | "google") => {
   const headersList = await headers();
-  const host = headersList.get("host");
-  const protocol = headersList.get("x-forwarded-proto") || "http";
   const referer = headersList.get("referer");
 
+  // Determine the path to redirect to after successful login
   let redirectToPath = "/";
 
   if (referer) {
@@ -23,15 +22,26 @@ export const signInWithOAuth = async (provider: "github" | "google") => {
       const refererUrl = new URL(referer);
       redirectToPath = `${refererUrl.pathname}${refererUrl.search}`;
     } catch (e) {
+      // If referer parsing fails, default to home page
       redirectToPath = "/";
     }
   }
 
-  const supabase = await createClient();
+  let baseUrl: string;
 
-  const authCallbackUrl = `${protocol}://${host}/auth/callback?redirect_to=${encodeURIComponent(
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    baseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  } else {
+    const host = headersList.get("host");
+    const protocol = headersList.get("x-forwarded-proto") || "http";
+    baseUrl = `${protocol}://${host}`;
+  }
+
+  const authCallbackUrl = `${baseUrl}/auth/callback?redirect_to=${encodeURIComponent(
     redirectToPath
   )}`;
+
+  const supabase = await createClient();
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
@@ -44,6 +54,7 @@ export const signInWithOAuth = async (provider: "github" | "google") => {
     console.log(error.message);
     return;
   }
+
   return redirect(data.url);
 };
 
