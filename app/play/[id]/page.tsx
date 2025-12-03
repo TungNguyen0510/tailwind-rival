@@ -1,6 +1,6 @@
 import PlayEditor from "@/components/PlayEditor";
 import TargetAndOutput from "@/components/TargetAndOutput";
-import { Button } from "@/components/ui/button";
+import SubmitActions from "@/components/SubmitActions";
 import PlayContextProvider from "@/context/PlayContextProvider";
 import { adminAuthClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
@@ -21,6 +21,11 @@ const PlayPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     challenge.user_created
   );
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isAuthenticated = !!user;
+
   if (!challenge) {
     notFound();
   }
@@ -30,16 +35,17 @@ const PlayPage = async ({ params }: { params: Promise<{ id: string }> }) => {
       <div className="flex h-[calc(100vh-48px-40px)] max-h-[calc(100vh-48px-40px)] w-screen overflow-x-auto">
         <div className="shrink flex-1 flex flex-col border-r">
           <PlayEditor id={id} />
-          <div className="flex flex-wrap items-center gap-2 p-2 bg-card">
-            <Button variant="secondary">My Submisstions</Button>
-            <Button variant="secondary">Top Solutions</Button>
-            <Button>Submit</Button>
-          </div>
+          <SubmitActions
+            challengeId={id}
+            targetImageUrl={challenge?.image}
+            isAuthenticated={isAuthenticated}
+          />
         </div>
         <TargetAndOutput
           publicUrl={challenge?.image}
           colors={challenge?.colors}
           userCreated={userCreated?.user as User}
+          challengeId={id}
         />
       </div>
     </PlayContextProvider>
