@@ -27,3 +27,16 @@ export const formatDateShort = (dateString: string): string => {
 
   return `${month} ${day}`;
 };
+
+
+/**
+ * Gets the color of the accuracy based on the accuracy percentage
+ * @param accuracy - Accuracy percentage
+ * @returns Color class name
+ */
+export const getAccuracyColor = (accuracy: number, type: "text" | "bg" = "text") => {
+    if (accuracy >= 95) return type === "text" ? "text-green-500" : "bg-green-500";
+    if (accuracy >= 80) return type === "text" ? "text-blue-500" : "bg-blue-500";
+    if (accuracy >= 60) return type === "text" ? "text-yellow-500" : "bg-yellow-500";
+    return type === "text" ? "text-orange-500" : "bg-orange-500";
+  };

@@ -118,10 +118,10 @@ const PlaygroundContent = () => {
       </div>
       <div className="lg:max-w-[433px] min-w-[433px] flex max-h-[calc(100vh-48px-32px)]">
         <div className="flex-1">
-          <div className="flex items-center justify-between p-1 px-4 border-b border-r bg-card/50">
+          <div className="flex items-center justify-between p-1 px-4 border-b border-r bg-accent">
             <span className="font-medium">Code output</span>
           </div>
-          <div className="flex flex-col gap-4 p-4 border-r h-full bg-card/50">
+          <div className="flex flex-col gap-4 p-4 border-r h-full bg-accent/50">
             <PlaygroundIframe
               ref={iframeRef}
               key="Iframe Preview"

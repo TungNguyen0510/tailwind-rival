@@ -246,7 +246,7 @@ export const getMySubmissions = async (challengeId: string) => {
 export const getTopSubmissions = async (challengeId: string) => {
   try {
     const supabase = await createClient();
-    const { adminAuthClient } = await import("@/utils/supabase/admin");
+    const { getBatchUserDisplayInfo } = await import("@/app/actions/user");
 
     const { data: submissions, error: submissionsError } = await supabase
       .from("submissions")
@@ -288,36 +288,15 @@ export const getTopSubmissions = async (challengeId: string) => {
 
     const uniqueUserIds = Array.from(userBestSubmissions.keys());
 
-    const userInfoPromises = uniqueUserIds.map(async (userId) => {
-      try {
-        const { data, error } = await adminAuthClient.getUserById(userId);
-        if (error || !data) return null;
-        return {
-          userId,
-          avatar_url: data.user.user_metadata?.avatar_url || null,
-          full_name: data.user.user_metadata?.full_name || "Anonymous",
-        };
-      } catch (error) {
-        console.error(`Error fetching user ${userId}:`, error);
-        return null;
-      }
-    });
-
-    const usersInfo = await Promise.all(userInfoPromises);
-
-    const userInfoMap = new Map(
-      usersInfo
-        .filter((info) => info !== null)
-        .map((info) => [info!.userId, info])
-    );
+    const userInfoMap = await getBatchUserDisplayInfo(uniqueUserIds);
 
     const topSubmissions = Array.from(userBestSubmissions.values())
       .map((submission: Submission) => {
         const userInfo = userInfoMap.get(submission.user_id);
         return {
           ...submission,
-          user_avatar_url: userInfo?.avatar_url || null,
-          user_full_name: userInfo?.full_name || "Anonymous",
+          user_avatar_url: userInfo?.avatarUrl || null,
+          user_full_name: userInfo?.displayName || "Anonymous",
         };
       })
       .sort((a: Submission, b: Submission) => {

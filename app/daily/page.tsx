@@ -23,7 +23,7 @@ async function Daily() {
           Daily challenges to improve your skills!
         </p>
       </section>
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 container mx-auto">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 container mx-auto">
         {challenges.map((challenge: any) => (
           <ChallengeCard key={challenge.id} challenge={challenge} />
         ))}

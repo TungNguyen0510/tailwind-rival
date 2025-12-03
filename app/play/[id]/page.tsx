@@ -21,6 +21,11 @@ const PlayPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     challenge.user_created
   );
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const isAuthenticated = !!user;
+
   if (!challenge) {
     notFound();
   }
@@ -33,6 +38,7 @@ const PlayPage = async ({ params }: { params: Promise<{ id: string }> }) => {
           <SubmitActions
             challengeId={id}
             targetImageUrl={challenge?.image}
+            isAuthenticated={isAuthenticated}
           />
         </div>
         <TargetAndOutput

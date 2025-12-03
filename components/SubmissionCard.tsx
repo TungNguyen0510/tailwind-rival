@@ -16,11 +16,12 @@ import { useTheme } from "next-themes";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { getAccuracyColor } from "@/utils/utils";
 
 /**
  * Card component that displays a single submission with its details.
  * Can show user avatar and name for Top Solutions (when showUserInfo is true).
- * 
+ *
  * @param submission - The submission data to display (can include user info)
  * @param isBest - Whether this is the best submission (highest accuracy)
  * @param showUserInfo - Whether to show user avatar and name (for Top Solutions)
@@ -33,16 +34,14 @@ interface SubmissionCardProps {
   loadCode: () => void;
 }
 
-const SubmissionCard = ({ submission, isBest, showUserInfo, loadCode }: SubmissionCardProps) => {
+const SubmissionCard = ({
+  submission,
+  isBest,
+  showUserInfo,
+  loadCode,
+}: SubmissionCardProps) => {
   const { theme } = useTheme();
   const router = useRouter();
-
-  const getAccuracyColor = (accuracy: number) => {
-    if (accuracy >= 95) return "bg-green-500";
-    if (accuracy >= 80) return "bg-blue-500";
-    if (accuracy >= 60) return "bg-yellow-500";
-    return "bg-orange-500";
-  };
 
   const handleCopyCode = async () => {
     try {
@@ -76,11 +75,13 @@ const SubmissionCard = ({ submission, isBest, showUserInfo, loadCode }: Submissi
           {showUserInfo && (
             <div className="flex items-center gap-2 mb-3 pb-3">
               <Avatar
-                className="h-8 w-8 cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                className="h-8 w-8 cursor-pointer hover:ring-2 hover:ring-primary transition-all border"
                 onClick={handleAvatarClick}
               >
                 <AvatarImage src={userAvatarUrl} alt={userFullName} />
-                <AvatarFallback className="text-xs">{userInitial}</AvatarFallback>
+                <AvatarFallback className="text-xs">
+                  {userInitial}
+                </AvatarFallback>
               </Avatar>
               <span
                 className="text-sm font-medium cursor-pointer hover:underline"
@@ -95,13 +96,19 @@ const SubmissionCard = ({ submission, isBest, showUserInfo, loadCode }: Submissi
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <Badge
-                  variant={submission.accuracy === 100 ? "default" : "secondary"}
-                  className={getAccuracyColor(submission.accuracy)}
+                  variant={
+                    submission.accuracy === 100 ? "default" : "secondary"
+                  }
+                  className={getAccuracyColor(submission.accuracy, "bg")}
                 >
                   {submission.accuracy.toFixed(2)}%
                 </Badge>
                 {isBest && (
-                  <Badge variant="outline" className="text-xs bg-yellow-200 text-yellow-600" title="Best: Highest accuracy + Shortest code">
+                  <Badge
+                    variant="outline"
+                    className="text-xs bg-yellow-200 text-yellow-600"
+                    title="Best: Highest accuracy + Shortest code"
+                  >
                     ⭐ Best
                   </Badge>
                 )}

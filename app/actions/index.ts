@@ -10,3 +10,11 @@ export {
 } from "./submission";
 
 export { getUserStats, getGlobalStats } from "./stats";
+
+export { saveUserSettings, getUserSettings } from "./settings";
+
+export {
+  getUserDisplayInfo,
+  getUserDisplayInfoFromUser,
+  getBatchUserDisplayInfo,
+} from "./user";

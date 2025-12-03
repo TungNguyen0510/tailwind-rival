@@ -19,16 +19,19 @@ import {
 /**
  * Component that handles challenge submission with image comparison.
  * Captures the PlayIframe output from the UI, compares with target image, and saves submission.
- * 
+ *
  * @param challengeId - The ID of the current challenge
  * @param targetImageUrl - The URL of the target image to compare against
+ * @param isAuthenticated - Whether user is logged in
  */
 const SubmitActions = ({
   challengeId,
   targetImageUrl,
+  isAuthenticated = false,
 }: {
   challengeId: string;
   targetImageUrl: string;
+  isAuthenticated?: boolean;
 }) => {
   const { play, setPlay } = usePlayContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -114,12 +117,9 @@ const SubmitActions = ({
       );
 
       if (result.success) {
-        toast.success(
-          `Submission successful! Accuracy: ${result.accuracy}%`,
-          {
-            duration: 5000,
-          }
-        );
+        toast.success(`Submission successful! Accuracy: ${result.accuracy}%`, {
+          duration: 5000,
+        });
 
         // Recheck perfect score after successful submission
         if (result.accuracy === 100) {
@@ -162,41 +162,90 @@ const SubmitActions = ({
         onSelectSubmission={handleLoadSubmission}
       />
 
-      <div className="flex flex-wrap items-center justify-end gap-2 p-2 bg-card/50">
-        <Button
-          variant="secondary"
-          disabled={isSubmitting}
-          onClick={() => setIsMySolutionsOpen(true)}
-        >
-          My Solutions
-        </Button>
-
+      <div className="flex flex-wrap items-center justify-end gap-2 p-2 bg-accent/50">
+        {/* My Solutions Button */}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <span>
                 <Button
                   variant="secondary"
-                  disabled={isSubmitting || !hasPerfectScore || isCheckingPerfectScore}
-                  onClick={() => setIsTopSolutionsOpen(true)}
+                  disabled={isSubmitting || !isAuthenticated}
+                  onClick={() => setIsMySolutionsOpen(true)}
                   className="gap-2"
                 >
-                  {!hasPerfectScore && <Lock className="h-4 w-4" />}
-                  Top Solutions
+                  {!isAuthenticated && <Lock className="h-4 w-4" />}
+                  My Solutions
                 </Button>
               </span>
             </TooltipTrigger>
-            {!hasPerfectScore && (
+            {!isAuthenticated && (
               <TooltipContent>
-                <p>Achieve 100% accuracy to unlock Top Solutions</p>
+                <p>Please login to view your solutions</p>
               </TooltipContent>
             )}
           </Tooltip>
         </TooltipProvider>
 
-        <Button onClick={handleSubmit} disabled={isSubmitting}>
-          {isSubmitting ? "Submitting..." : "Submit"}
-        </Button>
+        {/* Top Solutions Button */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span>
+                <Button
+                  variant="secondary"
+                  disabled={
+                    isSubmitting ||
+                    !hasPerfectScore ||
+                    isCheckingPerfectScore ||
+                    !isAuthenticated
+                  }
+                  onClick={() => setIsTopSolutionsOpen(true)}
+                  className="gap-2"
+                >
+                  {(!hasPerfectScore || !isAuthenticated) && (
+                    <Lock className="h-4 w-4" />
+                  )}
+                  Top Solutions
+                </Button>
+              </span>
+            </TooltipTrigger>
+            {!isAuthenticated ? (
+              <TooltipContent>
+                <p>
+                  Please login and achieve 100% accuracy to unlock Top Solutions
+                </p>
+              </TooltipContent>
+            ) : !hasPerfectScore ? (
+              <TooltipContent>
+                <p>Achieve 100% accuracy to unlock Top Solutions</p>
+              </TooltipContent>
+            ) : null}
+          </Tooltip>
+        </TooltipProvider>
+
+        {/* Submit Button */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting || !isAuthenticated}
+                  className="gap-2"
+                >
+                  {!isAuthenticated && <Lock className="h-4 w-4" />}
+                  {isSubmitting ? "Submitting..." : "Submit"}
+                </Button>
+              </span>
+            </TooltipTrigger>
+            {!isAuthenticated && (
+              <TooltipContent>
+                <p>Please login to submit your solution</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </>
   );
