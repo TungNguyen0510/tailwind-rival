@@ -1,5 +1,6 @@
 import { defaultUrl } from "@/constants/url";
 import { createClient } from "@/utils/supabase/server";
+import { getLocalDateString } from "@/utils/utils";
 
 export const generateMetadata = async () => {
   const supabase = await createClient();
@@ -7,7 +8,7 @@ export const generateMetadata = async () => {
     .from("challenges")
     .select("*")
     .not("target_day", "is", null)
-    .eq("target_day", new Date().toISOString().split("T")[0])
+    .eq("target_day", getLocalDateString())
     .single();
 
   return {

@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { calculateScore } from "@/utils/utils";
 import sharp from "sharp";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
@@ -8,13 +9,19 @@ import { Submission } from "@/types/submission";
 
 /**
  * Compares two images (target and output) pixel by pixel and calculates accuracy.
- * Submits the code and accuracy score to the submissions table.
+ * Calculates a total score based on accuracy and code efficiency.
+ * Submits the code, accuracy, and score to the submissions table.
+ *
+ * Score calculation:
+ * - Accuracy points: accuracy × 10 (0-1000)
+ * - Code efficiency bonus: max(0, 200 - codeLength/5) (0-200)
+ * - Total: 0-1200 points
  * 
  * @param challengeId - The ID of the challenge being submitted
  * @param code - The HTML/CSS code from the editor
  * @param outputImageBase64 - Base64 encoded image of the iframe output (data URL format)
  * @param targetImageUrl - Public URL of the target image to compare against
- * @returns Object with success status and accuracy score or error message
+ * @returns Object with success status, accuracy, score, and code length or error message
  */
 export const submitChallenge = async (
   challengeId: string,
@@ -82,12 +89,16 @@ export const submitChallenge = async (
 
     const accuracyScore = Math.round(accuracy * 100) / 100;
 
+    // Calculate total score based on accuracy and code efficiency
+    const score = calculateScore(accuracyScore, code.length);
+
     const { data: submissionData, error: submissionError } = await supabase
       .from("submissions")
       .insert({
         user_id: user.id,
         challenge_id: challengeId,
         accuracy: accuracyScore,
+        score: score,
         code: code,
       })
       .select()
@@ -112,6 +123,8 @@ export const submitChallenge = async (
     return {
       success: true,
       accuracy: accuracyScore,
+      score: score,
+      codeLength: code.length,
       submissionId: submissionData.id,
     };
   } catch (error) {
@@ -243,6 +256,66 @@ export const getMySubmissions = async (challengeId: string) => {
  * @param challengeId - The ID of the challenge to fetch submissions for
  * @returns Object with success status and array of submissions with user info or error message
  */
+/**
+ * Fetches the user's best (highest score) submission for each challenge.
+ * Used to display scores on challenge cards.
+ * 
+ * @param challengeIds - Array of challenge IDs to get best scores for
+ * @returns Map of challengeId to best score
+ */
+export const getUserBestScores = async (challengeIds: string[]) => {
+  try {
+    const supabase = await createClient();
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    // Return empty map if not authenticated
+    if (userError || !user) {
+      return {
+        success: true,
+        scores: new Map<string, number>(),
+      };
+    }
+
+    const { data: submissions, error: submissionsError } = await supabase
+      .from("submissions")
+      .select("challenge_id, score")
+      .eq("user_id", user.id)
+      .in("challenge_id", challengeIds);
+
+    if (submissionsError) {
+      console.error("Fetch user best scores error:", submissionsError);
+      return {
+        success: false,
+        scores: new Map<string, number>(),
+      };
+    }
+
+    // Find the best score for each challenge
+    const scores = new Map<string, number>();
+    for (const submission of submissions || []) {
+      const currentBest = scores.get(submission.challenge_id) || 0;
+      if ((submission.score || 0) > currentBest) {
+        scores.set(submission.challenge_id, submission.score || 0);
+      }
+    }
+
+    return {
+      success: true,
+      scores,
+    };
+  } catch (error) {
+    console.error("Unexpected error fetching user best scores:", error);
+    return {
+      success: false,
+      scores: new Map<string, number>(),
+    };
+  }
+};
+
 export const getTopSubmissions = async (challengeId: string) => {
   try {
     const supabase = await createClient();

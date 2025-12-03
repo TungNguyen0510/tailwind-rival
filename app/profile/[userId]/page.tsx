@@ -13,11 +13,12 @@ import { CompletedChallengesGrid } from "@/components/profile/CompletedChallenge
 import {
   Trophy,
   Flame,
-  Target,
-  TrendingUp,
-  Code,
+  Goal,
+  Ruler,
   Pencil,
   Globe,
+  Percent,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -71,7 +72,7 @@ const ProfilePage = async ({
 
   return (
     <div className="flex flex-col gap-4 items-center p-6 overflow-x-auto">
-      <div className="w-full max-w-3xl min-w-3xl flex flex-col gap-6">
+      <div className="w-full container mx-auto flex flex-col gap-6">
         <Card className="relative mt-20">
           <div className="absolute top-4 left-4 flex gap-1">
             {userInfo.website && (
@@ -202,33 +203,38 @@ const ProfilePage = async ({
 
               <div className="grid grid-cols-2 gap-4 w-full mt-4">
                 <StatsCard
-                  value={stats?.globalRank || null}
+                  value={stats?.globalRank ?? null}
                   label="Global Rank"
                   icon={<Trophy className="w-6 h-6 text-yellow-400" />}
                 />
 
                 <StatsCard
-                  value={stats?.dayStreak || 0}
+                  value={stats?.dayStreak ?? 0}
                   label="Day Streak"
                   icon={<Flame className="w-6 h-6 text-orange-500" />}
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-4 w-full mt-2">
+              <div className="grid grid-cols-4 gap-4 w-full mt-2">
                 <StatsCard
-                  value={stats?.completedChallenges || 0}
+                  value={stats?.completedChallenges ?? 0}
                   label="Completed Challenges"
-                  icon={<Target className="w-6 h-6 text-green-500" />}
+                  icon={<Goal className="w-6 h-6 text-green-500" />}
+                />
+                <StatsCard
+                  value={stats?.totalScore ?? null}
+                  label="Total score"
+                  icon={<Star className="w-6 h-6 text-yellow-500" />}
                 />
                 <StatsCard
                   value={stats?.avgAccuracy ? `${stats.avgAccuracy}%` : null}
-                  label="Avg Match"
-                  icon={<TrendingUp className="w-6 h-6 text-blue-500" />}
+                  label="Avg. match"
+                  icon={<Percent className="w-6 h-6 text-blue-500" />}
                 />
                 <StatsCard
-                  value={stats?.avgCodeLength || null}
-                  label="Avg Characters"
-                  icon={<Code className="w-6 h-6 text-purple-500" />}
+                  value={stats?.avgCodeLength ?? null}
+                  label="Avg. characters"
+                  icon={<Ruler className="w-6 h-6 text-purple-500" />}
                 />
               </div>
             </div>

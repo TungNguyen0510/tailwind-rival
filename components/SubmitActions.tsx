@@ -117,9 +117,10 @@ const SubmitActions = ({
       );
 
       if (result.success) {
-        toast.success(`Submission successful! Accuracy: ${result.accuracy}%`, {
-          duration: 5000,
-        });
+        toast.success(
+          `🎉 Submitted! Accuracy: ${result.accuracy}% | Score: ${result.score} | ${result.codeLength} chars`,
+          { duration: 5000 }
+        );
 
         // Recheck perfect score after successful submission
         if (result.accuracy === 100) {

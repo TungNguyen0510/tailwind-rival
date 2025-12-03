@@ -2,6 +2,7 @@
 
 import { UserSettings } from "@/types/user-settings";
 import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
 
 /**
  * Saves or updates user settings in the database
@@ -52,6 +53,8 @@ export const saveUserSettings = async (
         error: `Failed to save settings: ${upsertError.message}`,
       };
     }
+
+    revalidatePath(`/profile/${user.id}`);
 
     return {
       success: true,
@@ -144,4 +147,3 @@ export const getUserSettings = async () => {
     };
   }
 };
-
