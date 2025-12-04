@@ -56,7 +56,7 @@ const Chip = ({
       )}
       style={style}
     >
-      <span>{children}</span>
+      <span className="flex flex-row items-center gap-1">{children}</span>
       {shouldShowRemove && onRemove && (
         <button
           type="button"

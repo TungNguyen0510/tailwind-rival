@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { calculateScore } from "@/utils/utils";
+import { calculateScore, formatDateShort } from "@/utils/utils";
 import sharp from "sharp";
 import pixelmatch from "pixelmatch";
 import { PNG } from "pngjs";
@@ -390,6 +390,128 @@ export const getTopSubmissions = async (challengeId: string) => {
       success: false,
       error: error instanceof Error ? error.message : "An unexpected error occurred",
       submissions: [],
+    };
+  }
+};
+
+/**
+ * Fetches recent record-breaking submissions (new records or improved personal bests).
+ * Analyzes submissions from the last 7 days and identifies:
+ * - "Set a new record": User's first submission for a challenge with top score
+ * - "Broke own record": User improved their previous best score
+ * 
+ * @param limit - Maximum number of records to return (default 50)
+ * @returns Array of record activities with user info and challenge details
+ */
+export const getRecentRecords = async (limit: number = 50) => {
+  try {
+    const supabase = await createClient();
+    const { getBatchUserDisplayInfo } = await import("@/app/actions/user");
+
+    // Get submissions from last 7 days
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const { data: recentSubmissions, error: submissionsError } = await supabase
+      .from("submissions")
+      .select("*, challenges(id, target_day)")
+      .gte("created_at", sevenDaysAgo.toISOString())
+      .order("created_at", { ascending: false })
+      .limit(200); // Get more to analyze
+
+    if (submissionsError) {
+      console.error("Fetch recent submissions error:", submissionsError);
+      return { success: false, records: [] };
+    }
+
+    if (!recentSubmissions || recentSubmissions.length === 0) {
+      return { success: true, records: [] };
+    }
+
+    // Group submissions by user and challenge to find records
+    const records: Array<{
+      userId: string;
+      challengeId: string;
+      challengeTitle: string;
+      score: number;
+      accuracy: number;
+      type: "new_record" | "broke_record";
+      createdAt: string;
+    }> = [];
+
+    // Track best scores per user per challenge
+    const userChallengeScores = new Map<string, Map<string, number>>();
+
+    // Process submissions in chronological order (oldest first)
+    const sortedByTime = [...recentSubmissions].sort(
+      (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    );
+
+    for (const submission of sortedByTime) {
+      const userId = submission.user_id;
+      const challengeId = submission.challenge_id;
+      const score = submission.score;
+      const challengeTitle = `Challenge ${formatDateShort(submission.challenges?.target_day)}`;
+
+      if (!userChallengeScores.has(userId)) {
+        userChallengeScores.set(userId, new Map());
+      }
+
+      const userScores = userChallengeScores.get(userId)!;
+      const previousBest = userScores.get(challengeId);
+
+      if (previousBest === undefined) {
+        // First submission for this challenge - new record
+        records.push({
+          userId,
+          challengeId,
+          challengeTitle,
+          score,
+          accuracy: submission.accuracy,
+          type: "new_record",
+          createdAt: submission.created_at,
+        });
+        userScores.set(challengeId, score);
+      } else if (score > previousBest) {
+        // Improved personal best - broke own record
+        records.push({
+          userId,
+          challengeId,
+          challengeTitle,
+          score,
+          accuracy: submission.accuracy,
+          type: "broke_record",
+          createdAt: submission.created_at,
+        });
+        userScores.set(challengeId, score);
+      }
+    }
+
+    // Sort records by time (most recent first) and limit
+    const sortedRecords = records
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, limit);
+
+    // Fetch user info
+    const uniqueUserIds = Array.from(new Set(sortedRecords.map(r => r.userId)));
+    const userInfoMap = await getBatchUserDisplayInfo(uniqueUserIds);
+
+    // Add user info to records
+    const recordsWithUserInfo = sortedRecords.map(record => ({
+      ...record,
+      userName: userInfoMap.get(record.userId)?.displayName || "Anonymous",
+      userAvatar: userInfoMap.get(record.userId)?.avatarUrl || "",
+    }));
+
+    return {
+      success: true,
+      records: recordsWithUserInfo,
+    };
+  } catch (error) {
+    console.error("Unexpected error fetching recent records:", error);
+    return {
+      success: false,
+      records: [],
     };
   }
 };

@@ -27,7 +27,7 @@ export async function generateMetadata({
         {
           url: challenge.image,
           width: 1200,
-          height: 630,
+          height: 900,
           alt: `Target (${challenge.target_day}) - Tailwind Rival`,
         },
       ],
@@ -42,7 +42,7 @@ export async function generateMetadata({
         {
           url: challenge.image,
           width: 1200,
-          height: 630,
+          height: 900,
           alt: `Target (${challenge.target_day}) - Tailwind Rival`,
         },
       ],

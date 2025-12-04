@@ -8,7 +8,8 @@ import { defaultUrl } from "@/constants/url";
 export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Tailwind Rival",
-  description: "The fun way to learn TailwindCSS. Replicate the target layouts using TailwindCSS and have fun!",
+  description:
+    "The fun way to learn TailwindCSS. Replicate the target layouts using TailwindCSS and have fun!",
 };
 
 const geistSans = Geist({
@@ -30,7 +31,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster richColors position="top-right" />
+          <Toaster richColors position="top-right" closeButton expand />
           <MainLayout>{children}</MainLayout>
         </ThemeProvider>
       </body>

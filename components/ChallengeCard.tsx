@@ -20,12 +20,17 @@ export default function ChallengeCard({
   showChip = true,
   bestScore,
 }: ChallengeCardProps) {
-
   return (
     <Link href={`/play/${challenge.id}`}>
       <Card className="group overflow-hidden hover:scale-105 transition-all duration-300 rounded-[6px]">
         <CardContent className="p-2 relative">
-          <Image src={challenge.image} alt={challenge.id} width={400} height={300} className="object-cover rounded-[6px] aspect-4/3" />
+          <Image
+            src={challenge.image}
+            alt={challenge.id}
+            width={400}
+            height={300}
+            className="object-cover rounded-[6px] aspect-4/3"
+          />
           {showChip && (
             <Chip
               className={cn(
@@ -37,11 +42,19 @@ export default function ChallengeCard({
             </Chip>
           )}
         </CardContent>
-        <CardFooter className="px-3 py-1 flex justify-between items-center">
+        <CardFooter className="px-4 py-1 flex justify-between items-center">
           <div className="flex flex-col items-start">
             <h3 className="text-sm text-card-foreground/50">Your score</h3>
-            <p className={cn(bestScore !== undefined ? "text-yellow-600 font-semibold" : "text-card-foreground")}>
-              {bestScore !== undefined ? `${Math.round(bestScore)}` : "Not played"}
+            <p
+              className={cn(
+                bestScore !== undefined
+                  ? "text-yellow-600"
+                  : "text-card-foreground/80"
+              )}
+            >
+              {bestScore !== undefined
+                ? `${Math.round(bestScore)}`
+                : "Not played"}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -53,4 +66,4 @@ export default function ChallengeCard({
       </Card>
     </Link>
   );
-}       
+}

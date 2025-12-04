@@ -15,6 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getAccuracyColor } from "@/utils/utils";
 
 /**
  * Component that handles challenge submission with image comparison.
@@ -117,10 +118,18 @@ const SubmitActions = ({
       );
 
       if (result.success) {
-        toast.success(
-          `🎉 Submitted! Accuracy: ${result.accuracy}% | Score: ${result.score} | ${result.codeLength} chars`,
-          { duration: 5000 }
-        );
+        toast.success(`🎉 Submitted!`, {
+          description: (
+            <div className="flex flex-col gap-1">
+              <p className={getAccuracyColor(result.accuracy || 0, "text")}>
+                Accuracy: {result.accuracy}%
+              </p>
+              <p className="text-yellow-500">Score: {result.score}</p>
+              <p className="text-muted-foreground">{result.codeLength} chars</p>
+            </div>
+          ),
+          duration: 5000,
+        });
 
         // Recheck perfect score after successful submission
         if (result.accuracy === 100) {

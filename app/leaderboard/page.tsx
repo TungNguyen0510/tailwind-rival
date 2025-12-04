@@ -66,7 +66,9 @@ export default async function Leaderboard() {
         const allStreaks = streakLeaderboard.map((e) => e.streak);
         const userStreak = stats.dayStreak;
         const rank =
-          allStreaks.filter((s) => s > userStreak).length + streakLeaderboard.length + 1;
+          allStreaks.filter((s) => s > userStreak).length +
+          streakLeaderboard.length +
+          1;
         currentUserStreakRank = { rank, streak: userStreak };
       }
     }
@@ -75,12 +77,12 @@ export default async function Leaderboard() {
   // Get current user info
   const currentUserInfo = currentUser
     ? userInfoMap.get(currentUser.id) || {
-      displayName:
-        currentUser.user_metadata?.full_name ||
-        currentUser.email?.split("@")[0] ||
-        "You",
-      avatarUrl: currentUser.user_metadata?.avatar_url || "",
-    }
+        displayName:
+          currentUser.user_metadata?.full_name ||
+          currentUser.email?.split("@")[0] ||
+          "You",
+        avatarUrl: currentUser.user_metadata?.avatar_url || "",
+      }
     : null;
 
   return (
@@ -111,7 +113,7 @@ export default async function Leaderboard() {
               />
 
               {/* Rest of leaderboard (4-100) */}
-              <div className="flex flex-col gap-2 mt-8 max-w-2xl mx-auto">
+              <div className="flex flex-col gap-2 mt-8 max-w-3xl mx-auto">
                 {scoreLeaderboard.slice(3).map((entry) => (
                   <LeaderboardCard
                     key={entry.userId}
@@ -240,18 +242,20 @@ function TopThreePodium({
     };
 
     const podiumHeights = {
-      1: "h-20",
-      2: "h-14",
-      3: "h-10",
+      1: "h-32",
+      2: "h-20",
+      3: "h-12",
     };
 
     const value =
       type === "score"
         ? `${entry.totalScore?.toLocaleString() || 0} points`
-        : `${entry.streak || 0} days`;
+        : `${entry.streak || 0} day${entry.streak === 1 ? "" : "s"}`;
 
     const subValue =
-      type === "score" ? `(${entry.challengeCount || 0} challenges)` : "";
+      type === "score"
+        ? `(${entry.challengeCount || 0} challenge${(entry.challengeCount || 0) === 1 ? "" : "s"})`
+        : "";
 
     return (
       <div className="flex flex-col items-center">
@@ -260,7 +264,7 @@ function TopThreePodium({
           className="flex flex-col items-center hover:opacity-80 transition-opacity"
         >
           <Avatar
-            className={`border-2 ${position === 1 ? "size-20" : "size-16"} mb-2`}
+            className={`border-2 border-yellow-500/50 ${position === 1 ? "size-20" : "size-16"} mb-2`}
           >
             <AvatarImage src={avatarUrl} alt={displayName} />
             <AvatarFallback className={position === 1 ? "text-xl" : "text-lg"}>
@@ -277,7 +281,7 @@ function TopThreePodium({
 
         {/* Podium base */}
         <div
-          className={`w-28 ${podiumHeights[position]} bg-linear-to-b ${podiumColors[position]} rounded-t-lg mt-4 flex items-center justify-center`}
+          className={`w-48 ${podiumHeights[position]} bg-linear-to-b ${podiumColors[position]} rounded-t-lg mt-4 flex items-center justify-center`}
         >
           <span className="text-white font-bold text-xl">#{position}</span>
         </div>
@@ -289,10 +293,10 @@ function TopThreePodium({
   if (entries.length === 1) {
     // Only 1 user - show centered with placeholders on both sides
     return (
-      <div className="flex justify-center items-end gap-4 mb-8">
-        <div className="w-28" /> {/* Left placeholder */}
+      <div className="flex justify-center items-end gap-1 mb-8">
+        <div className="w-48" /> {/* Left placeholder */}
         <PodiumCard entry={first} position={1} />
-        <div className="w-28" /> {/* Right placeholder */}
+        <div className="w-48" /> {/* Right placeholder */}
       </div>
     );
   }
@@ -300,17 +304,17 @@ function TopThreePodium({
   if (entries.length === 2) {
     // Only 2 users - #2 left, #1 center, placeholder right
     return (
-      <div className="flex justify-center items-end gap-4 mb-8">
+      <div className="flex justify-center items-end gap-1 mb-8">
         <PodiumCard entry={second} position={2} />
         <PodiumCard entry={first} position={1} />
-        <div className="w-28" /> {/* Right placeholder to keep #1 centered */}
+        <div className="w-48" /> {/* Right placeholder to keep #1 centered */}
       </div>
     );
   }
 
   // 3 users - #2 left, #1 center, #3 right
   return (
-    <div className="flex justify-center items-end gap-4 mb-8">
+    <div className="flex justify-center items-end gap-1 mb-8">
       <PodiumCard entry={second} position={2} />
       <PodiumCard entry={first} position={1} />
       <PodiumCard entry={third} position={3} />
@@ -345,11 +349,11 @@ function LeaderboardCard({
   const value =
     type === "score"
       ? `${entry.totalScore?.toLocaleString() || 0} points`
-      : `${entry.streak || 0} days`;
+      : `${entry.streak || 0} day${entry.streak === 1 ? "" : "s"}`;
 
   const subValue =
     type === "score" && entry.challengeCount
-      ? `(${entry.challengeCount} challenges)`
+      ? `(${entry.challengeCount} challenge${entry.challengeCount === 1 ? "" : "s"})`
       : "";
 
   return (

@@ -172,7 +172,7 @@ const ProfilePage = async ({
             </Link>
           )}
           <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <div className="rounded-full overflow-hidden border-background shadow-2xl">
+            <div className="rounded-full overflow-hidden border-background shadow-2xl bg-background">
               <Avatar className="size-[120px] border">
                 <AvatarImage
                   src={userInfo.avatar_url || undefined}

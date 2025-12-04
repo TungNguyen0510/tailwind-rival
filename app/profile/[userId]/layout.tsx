@@ -23,7 +23,7 @@ export const generateMetadata = async ({
         {
           url: userInfo.avatarUrl || "/favicon.ico",
           width: 1200,
-          height: 630,
+          height: 900,
           alt: `${userInfo.displayName}'s Profile - Tailwind Rival`,
         },
       ],
@@ -38,7 +38,7 @@ export const generateMetadata = async ({
         {
           url: userInfo.avatarUrl || "/favicon.ico",
           width: 1200,
-          height: 630,
+          height: 900,
           alt: `${userInfo.displayName}'s Profile - Tailwind Rival`,
         },
       ],

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 function Header() {
   return (
-    <nav className="sticky top-0 left-0 w-full flex justify-center border-b border-b-foreground/10 h-12 z-10 bg-card">
+    <nav className="sticky top-0 left-0 w-full flex justify-center border-b border-b-foreground/10 h-12 z-10 bg-card select-none">
       <div className="w-full flex justify-between items-center p-2 px-10 text-sm">
         <div className="flex gap-10 justify-between items-center transition-colors">
           <div className="flex gap-5 items-center font-semibold text-lg">
