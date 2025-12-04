@@ -5,11 +5,36 @@ import MainLayout from "@/components/layout/MainLayout";
 import { Toaster } from "@/components/ui/sonner";
 import { defaultUrl } from "@/constants/url";
 
+const ogImageUrl = `${defaultUrl}/api/og/home`;
+
 export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Tailwind Rival",
-  description:
-    "The fun way to learn TailwindCSS. Replicate the target layouts using TailwindCSS and have fun!",
+  description: "The funnest TailwindCSS game for web developers!",
+  openGraph: {
+    title: "Tailwind Rival",
+    description: "The funnest TailwindCSS game for web developers!",
+    url: "/",
+    siteName: "Tailwind Rival",
+    type: "website",
+    images: [
+      {
+        url: ogImageUrl,
+        width: 1200,
+        height: 630,
+        alt: "Tailwind Rival",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Tailwind Rival",
+    description: "The funnest TailwindCSS game for web developers!",
+    images: [ogImageUrl],
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 const geistSans = Geist({
@@ -31,7 +56,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster richColors position="top-right" closeButton expand />
+          <Toaster richColors position="top-right" expand />
           <MainLayout>{children}</MainLayout>
         </ThemeProvider>
       </body>

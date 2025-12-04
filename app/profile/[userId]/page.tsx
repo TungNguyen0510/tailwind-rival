@@ -78,7 +78,7 @@ const ProfilePage = async ({
             {userInfo.website && (
               <Link href={userInfo.website} target="_blank">
                 <Badge variant="secondary" className="hover:scale-105 p-1">
-                  <Globe className="size-3" />
+                  <Globe className="size-4" />
                 </Badge>
               </Link>
             )}
@@ -88,7 +88,7 @@ const ProfilePage = async ({
                 target="_blank"
               >
                 <Badge variant="secondary" className="hover:scale-105 p-1">
-                  <TwitterIcon className="size-3" />
+                  <TwitterIcon className="size-4" />
                 </Badge>
               </Link>
             )}
@@ -98,7 +98,7 @@ const ProfilePage = async ({
                 target="_blank"
               >
                 <Badge variant="secondary" className="hover:scale-105 p-1">
-                  <GitHubIcon className="size-3" />
+                  <GitHubIcon className="size-4" />
                 </Badge>
               </Link>
             )}
@@ -108,7 +108,7 @@ const ProfilePage = async ({
                 target="_blank"
               >
                 <Badge variant="secondary" className="hover:scale-105 p-1">
-                  <CodePenIcon className="size-3" />
+                  <CodePenIcon className="size-4" />
                 </Badge>
               </Link>
             )}
@@ -118,7 +118,7 @@ const ProfilePage = async ({
                 target="_blank"
               >
                 <Badge variant="secondary" className="hover:scale-105 p-1">
-                  <LinkedInIcon className="size-3" />
+                  <LinkedInIcon className="size-4" />
                 </Badge>
               </Link>
             )}
@@ -128,7 +128,7 @@ const ProfilePage = async ({
                 target="_blank"
               >
                 <Badge variant="secondary" className="hover:scale-105 p-1">
-                  <InstagramIcon className="size-3" />
+                  <InstagramIcon className="size-4" />
                 </Badge>
               </Link>
             )}
@@ -138,7 +138,7 @@ const ProfilePage = async ({
                 target="_blank"
               >
                 <Badge variant="secondary" className="hover:scale-105 p-1">
-                  <YouTubeIcon className="size-3" />
+                  <YouTubeIcon className="size-4" />
                 </Badge>
               </Link>
             )}
@@ -148,7 +148,7 @@ const ProfilePage = async ({
                 target="_blank"
               >
                 <Badge variant="secondary" className="hover:scale-105 p-1">
-                  <TwitchIcon className="size-3" />
+                  <TwitchIcon className="size-4" />
                 </Badge>
               </Link>
             )}
@@ -158,7 +158,7 @@ const ProfilePage = async ({
                 target="_blank"
               >
                 <Badge variant="secondary" className="hover:scale-105 p-1">
-                  <FacebookIcon className="size-3" />
+                  <FacebookIcon className="size-4" />
                 </Badge>
               </Link>
             )}
@@ -166,7 +166,7 @@ const ProfilePage = async ({
           {isOwnProfile && (
             <Link href="/settings">
               <Button className="absolute top-4 right-4">
-                <Pencil className="w-4 h-4" />
+                <Pencil className="size-4" />
                 Edit Profile
               </Button>
             </Link>
@@ -205,13 +205,13 @@ const ProfilePage = async ({
                 <StatsCard
                   value={stats?.globalRank ?? null}
                   label="Global Rank"
-                  icon={<Trophy className="w-6 h-6 text-yellow-400" />}
+                  icon={<Trophy className="size-6 text-yellow-400" />}
                 />
 
                 <StatsCard
                   value={stats?.dayStreak ?? 0}
                   label="Day Streak"
-                  icon={<Flame className="w-6 h-6 text-orange-500" />}
+                  icon={<Flame className="size-6 text-orange-500" />}
                 />
               </div>
 
@@ -219,22 +219,22 @@ const ProfilePage = async ({
                 <StatsCard
                   value={stats?.completedChallenges ?? 0}
                   label="Completed Challenges"
-                  icon={<Goal className="w-6 h-6 text-green-500" />}
+                  icon={<Goal className="size-6 text-green-500" />}
                 />
                 <StatsCard
                   value={stats?.totalScore ?? null}
                   label="Total score"
-                  icon={<Star className="w-6 h-6 text-yellow-500" />}
+                  icon={<Star className="size-6 text-yellow-500" />}
                 />
                 <StatsCard
                   value={stats?.avgAccuracy ? `${stats.avgAccuracy}%` : null}
                   label="Avg. match"
-                  icon={<Percent className="w-6 h-6 text-blue-500" />}
+                  icon={<Percent className="size-6 text-blue-500" />}
                 />
                 <StatsCard
                   value={stats?.avgCodeLength ?? null}
                   label="Avg. characters"
-                  icon={<Ruler className="w-6 h-6 text-purple-500" />}
+                  icon={<Ruler className="size-6 text-purple-500" />}
                 />
               </div>
             </div>

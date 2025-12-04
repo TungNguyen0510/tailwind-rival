@@ -1,16 +1,21 @@
+import { defaultUrl } from "@/constants/url";
+
+const ogImageUrl = `${defaultUrl}/api/og/home`;
+
 export const generateMetadata = async () => {
   return {
-    title: "Settings Your Profile - Tailwind Rival",
-    description: "Settings for Tailwind Rival",
+    metadataBase: new URL(defaultUrl),
+    title: "Settings - Tailwind Rival",
+    description: "The funnest TailwindCSS game for web developers!",
     openGraph: {
-      title: "Settings Your Profile - Tailwind Rival",
-      description: "Settings for Tailwind Rival",
+      title: "Settings - Tailwind Rival",
+      description: "The funnest TailwindCSS game for web developers!",
       url: "/settings",
       siteName: "Tailwind Rival",
       type: "website",
       images: [
         {
-          url: "/favicon.ico",
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: "Settings - Tailwind Rival",
@@ -18,14 +23,14 @@ export const generateMetadata = async () => {
       ],
     },
     twitter: {
-      title: "Settings Your Profile - Tailwind Rival",
-      description: "Settings for Tailwind Rival",
+      title: "Settings - Tailwind Rival",
+      description: "The funnest TailwindCSS game for web developers!",
       url: "/settings",
       siteName: "Tailwind Rival",
       type: "website",
       images: [
         {
-          url: "/favicon.ico",
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: "Settings - Tailwind Rival",

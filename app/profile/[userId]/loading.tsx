@@ -11,6 +11,13 @@ export default function ProfileLoading() {
     <div className="flex flex-col gap-4 items-center p-6 overflow-x-auto">
       <div className="w-full container mx-auto flex flex-col gap-6">
         <Card className="relative mt-20">
+          {/* Social links skeleton */}
+          <div className="absolute top-4 left-4 flex gap-1">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-[28px] w-[26px] rounded-full" />
+            ))}
+          </div>
+
           {/* Avatar skeleton */}
           <div className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
             <Skeleton className="size-[120px] rounded-full" />
@@ -46,10 +53,12 @@ export default function ProfileLoading() {
 
         {/* Challenges skeleton */}
         <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-center py-8 gap-4">
-              <Spinner className="w-8 h-8 text-primary" />
-              <span className="text-muted-foreground">Loading profile...</span>
+          <CardContent className="pt-6 space-y-3">
+            <Skeleton className="h-8 w-32" />
+            <div className="flex gap-2 flex-wrap">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <Skeleton key={i} className="h-15 w-20" />
+              ))}
             </div>
           </CardContent>
         </Card>
