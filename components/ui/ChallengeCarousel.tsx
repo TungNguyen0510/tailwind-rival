@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import ChallengeCard from "@/components/ChallengeCard";
-import TomorrowCard from "@/components/TomorrowCard";
+import ChallengeCard from "@/components/ui/ChallengeCard";
+import TomorrowCard from "@/components/ui/TomorrowCard";
 import { Chip } from "@/components/ui/chip";
 import { cn } from "@/lib/utils";
 import { Challenge } from "@/types/challenge";
 import { formatDateShort } from "@/utils/utils";
-import { ScrollArea, ScrollBar } from "./ui/scroll-area";
-import { Check, CircleCheck } from "lucide-react";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { CircleCheck } from "lucide-react";
 
 interface ChallengeCarouselProps {
   challenges: Challenge[];

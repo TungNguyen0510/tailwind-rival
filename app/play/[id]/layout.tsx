@@ -1,5 +1,6 @@
 import { Challenge } from "@/types/challenge";
 import { createClient } from "@/utils/supabase/server";
+import { defaultUrl } from "@/constants/url";
 
 export async function generateMetadata({
   params,
@@ -14,38 +15,31 @@ export async function generateMetadata({
     .eq("id", id)
     .single()) as { data: Challenge };
 
+  const ogImageUrl = `${defaultUrl}/api/og/play/${id}`;
+
   return {
-    title: `Target (${challenge.target_day}) - Tailwind Rival`,
-    description: `Play the challenge for ${challenge.target_day} on Tailwind Rival`,
+    title: `Challenge (${challenge.target_day}) - Tailwind Rival`,
+    description: "The funnest TailwindCSS game for web developers!",
     openGraph: {
-      title: `Target (${challenge.target_day}) - Tailwind Rival`,
-      description: `Play the challenge for ${challenge.target_day}`,
+      title: `Challenge (${challenge.target_day}) - Tailwind Rival`,
+      description: "The funnest TailwindCSS game for web developers!",
       url: `/play/${id}`,
       siteName: "Tailwind Rival",
       type: "website",
       images: [
         {
-          url: challenge.image,
+          url: ogImageUrl,
           width: 1200,
-          height: 900,
-          alt: `Target (${challenge.target_day}) - Tailwind Rival`,
+          height: 630,
+          alt: `Challenge #${challenge.target_day} - Tailwind Rival`,
         },
       ],
     },
     twitter: {
-      title: `Play (${challenge.target_day}) - Tailwind Rival`,
-      description: `Play the challenge for ${challenge.target_day}`,
-      url: `/play/${id}`,
-      siteName: "Tailwind Rival",
-      type: "website",
-      images: [
-        {
-          url: challenge.image,
-          width: 1200,
-          height: 900,
-          alt: `Target (${challenge.target_day}) - Tailwind Rival`,
-        },
-      ],
+      card: "summary_large_image",
+      title: `Challenge #${challenge.target_day} - Tailwind Rival`,
+      description: "The funnest TailwindCSS game for web developers!",
+      images: [ogImageUrl],
     },
     icons: {
       icon: "/favicon.ico",

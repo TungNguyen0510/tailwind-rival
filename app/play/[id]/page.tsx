@@ -1,6 +1,6 @@
-import PlayEditor from "@/components/PlayEditor";
-import TargetAndOutput from "@/components/TargetAndOutput";
-import SubmitActions from "@/components/SubmitActions";
+import PlayEditor from "@/components/play/PlayEditor";
+import TargetAndOutput from "@/components/play/TargetAndOutput";
+import SubmitActions from "@/components/play/SubmitActions";
 import PlayContextProvider from "@/context/PlayContextProvider";
 import { adminAuthClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";

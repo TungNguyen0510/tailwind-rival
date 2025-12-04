@@ -1,9 +1,11 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { LockKeyhole } from "lucide-react";
-import FlipCountdown from "./FlipCountdown";
-import Image from "next/image";
+import FlipCountdown from "@/components/ui/FlipCountdown";
+import { getTimeUntilMidnight } from "@/utils/utils";
+import { TimeLeft } from "@/types/time";
 
 /**
  * TomorrowCard Component
@@ -11,8 +13,26 @@ import Image from "next/image";
  * Shows a blurred/locked image and countdown until the challenge unlocks at midnight
  */
 export default function TomorrowCard() {
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setTimeLeft(getTimeUntilMidnight());
+
+    const interval = setInterval(() => {
+      setTimeLeft(getTimeUntilMidnight());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <Card className="overflow-hidden rounded-[6px] bg-card/80 hover:scale-105 transition-all duration-300">
+    <Card className="overflow-hidden rounded-[6px] hover:scale-105 transition-all duration-300">
       <CardContent className="p-2 relative">
         {/* Locked/blurred preview image */}
         <div className="relative aspect-4/3 rounded-[6px] overflow-hidden">
@@ -62,7 +82,7 @@ export default function TomorrowCard() {
 
       <CardFooter className="px-3 py-3 flex flex-col items-center gap-2">
         <span className="text-sm text-card-foreground/50">Unlocks in</span>
-        <FlipCountdown />
+        {mounted && <FlipCountdown timeLeft={timeLeft} />}
       </CardFooter>
     </Card>
   );

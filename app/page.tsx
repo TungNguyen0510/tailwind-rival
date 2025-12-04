@@ -1,6 +1,6 @@
 import LoginDialog from "@/components/auth/LoginDialog";
-import ChallengeCarousel from "@/components/ChallengeCarousel";
-import RecordTicker from "@/components/RecordTicker";
+import ChallengeCarousel from "@/components/ui/ChallengeCarousel";
+import RecordTicker from "@/components/ui/RecordTicker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/utils/supabase/server";

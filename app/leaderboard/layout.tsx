@@ -1,5 +1,7 @@
 import { defaultUrl } from "@/constants/url";
 
+const ogImageUrl = `${defaultUrl}/api/og/home`;
+
 export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Leaderboard - Tailwind Rival",
@@ -14,9 +16,9 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "/favicon.ico",
+        url: ogImageUrl,
         width: 1200,
-        height: 900,
+        height: 630,
         alt: "Leaderboard - Tailwind Rival",
       },
     ],
@@ -26,6 +28,7 @@ export const metadata = {
     description:
       "See the top players ranked by score and streak on Tailwind Rival",
     card: "summary_large_image",
+    images: [ogImageUrl],
   },
   icons: {
     icon: "/favicon.ico",

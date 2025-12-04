@@ -1,9 +1,9 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Challenge } from "@/types/challenge";
 import Image from "next/image";
-import { Chip } from "./ui/chip";
+import { Chip } from "@/components/ui/chip";
 import { formatDateShort } from "@/utils/utils";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";

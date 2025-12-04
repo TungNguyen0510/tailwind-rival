@@ -1,4 +1,4 @@
-import ChallengeCard from "@/components/ChallengeCard";
+import ChallengeCard from "@/components/ui/ChallengeCard";
 import { getUserBestScores } from "@/app/actions/submission";
 import { createClient } from "@/utils/supabase/server";
 import { getLocalDateString } from "@/utils/utils";

@@ -9,7 +9,7 @@ import {
   DropzoneEmptyState,
   useDropzoneContext,
   formatBytes,
-} from "@/components/dropzone";
+} from "@/components/ui/dropzone";
 import {
   InputGroup,
   InputGroupAddon,
@@ -185,7 +185,6 @@ function Settings() {
     facebook: "",
   });
 
-  const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [currentAvatarUrl, setCurrentAvatarUrl] = useState<string | null>(null);
 
@@ -218,7 +217,6 @@ function Settings() {
    */
   useEffect(() => {
     const loadSettings = async () => {
-      setIsLoading(true);
       const result = await getUserSettings();
 
       if (result.success && result.settings) {
@@ -227,8 +225,6 @@ function Settings() {
       } else if (result.error) {
         toast.error(result.error);
       }
-
-      setIsLoading(false);
     };
 
     loadSettings();
@@ -325,15 +321,6 @@ function Settings() {
 
     setIsSaving(false);
   };
-
-  // Show loading state while fetching settings
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Spinner className="w-8 h-8 text-primary" />
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto max-w-3xl py-8 px-4">
@@ -557,7 +544,6 @@ function Settings() {
                 type="text"
                 value={settings.facebook || ""}
                 onChange={(e) => handleInputChange("facebook", e.target.value)}
-                placeholder=""
               />
             </InputGroup>
           </div>
@@ -567,7 +553,7 @@ function Settings() {
           <Button onClick={handleSave} disabled={isSaving} size="lg">
             {isSaving ? (
               <>
-                <Spinner className="w-4 h-4 text-primary" />
+                <Spinner className="text-white size-4" />
                 Saving...
               </>
             ) : (

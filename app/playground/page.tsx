@@ -2,15 +2,15 @@
 
 import { useRef, useState } from "react";
 import html2canvas from "html2canvas-pro";
-import PlaygroundEditor from "@/components/PlaygroundEditor";
+import PlaygroundEditor from "@/components/playground/PlaygroundEditor";
 import { Button } from "@/components/ui/button";
 import PlaygroundContextProvider from "@/context/PlaygroudContextProvider";
-import PlaygroundIframe from "@/components/PlaygroundIframe";
+import PlaygroundIframe from "@/components/playground/PlaygroundIframe";
 import { usePlaygroundContext } from "@/context/PlaygroudContextProvider";
 import { createChallenge } from "@/app/actions";
 import { toast } from "sonner";
 import { playgroundDefaultHtml } from "@/constants/html";
-import ColorInputForm from "@/components/ColorInputForm";
+import ColorInputForm from "@/components/playground/ColorInputForm";
 
 const PlaygroundContent = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
