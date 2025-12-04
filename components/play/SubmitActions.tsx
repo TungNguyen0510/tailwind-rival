@@ -6,8 +6,8 @@ import { submitChallenge, checkUserHasPerfectScore } from "@/app/actions";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import html2canvas from "html2canvas-pro";
-import MySolutionsSheet from "./MySolutionsSheet";
-import TopSolutionsSheet from "./TopSolutionsSheet";
+import MySolutionsSheet from "@/components/play/MySolutionsSheet";
+import TopSolutionsSheet from "@/components/play/TopSolutionsSheet";
 import { Lock } from "lucide-react";
 import {
   Tooltip,

@@ -5,7 +5,7 @@ import {
   ReactCompareSliderImage,
   useReactCompareSliderRef,
 } from "react-compare-slider";
-import PlayIframe from "./PlayIframe";
+import PlayIframe from "@/components/play/PlayIframe";
 import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import useKeyHold from "@/hooks/useKeyHold";

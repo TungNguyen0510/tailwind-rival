@@ -1,6 +1,4 @@
-import { Swords } from "lucide-react";
-
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
 import HeaderAuth from "@/components/auth/HeaderAuth";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";

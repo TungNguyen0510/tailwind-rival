@@ -1,6 +1,6 @@
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import "./globals.css";
+import "@/app/globals.css";
 import MainLayout from "@/components/layout/MainLayout";
 import { Toaster } from "@/components/ui/sonner";
 import { defaultUrl } from "@/constants/url";

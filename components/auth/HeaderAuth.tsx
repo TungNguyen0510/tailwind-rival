@@ -1,8 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 
-import UserMenu from "./UserMenu";
-import LoginDialog from "./LoginDialog";
-import { Button } from "../ui/button";
+import UserMenu from "@/components/auth/UserMenu";
+import LoginDialog from "@/components/auth/LoginDialog";
+import { Button } from "@/components/ui/button";
 
 export default async function AuthButton() {
   const supabase = await createClient();

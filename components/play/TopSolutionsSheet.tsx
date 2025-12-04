@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { SubmissionWithUser } from "@/types/submission";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import SubmissionCard from "./SubmissionCard";
+import SubmissionCard from "@/components/play/SubmissionCard";
 
 /**
  * Sheet component that displays top submissions from all users for a challenge.

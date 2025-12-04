@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { Submission } from "@/types/submission";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import SubmissionCard from "./SubmissionCard";
+import SubmissionCard from "@/components/play/SubmissionCard";
 
 /**
  * Sheet component that displays user's previous submissions for a challenge.

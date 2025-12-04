@@ -1,9 +1,13 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { TimeLeft } from "@/types/time";
-import { getTimeUntilMidnight } from "@/utils/utils";
+
+/**
+ * Props for FlipCountdown component
+ * @property timeLeft - The remaining time to display (hours, minutes, seconds)
+ */
+interface FlipCountdownProps {
+  timeLeft: TimeLeft;
+}
 
 /**
  * FlipDigit Component
@@ -36,43 +40,11 @@ function FlipDigit({ value, label }: { value: string; label?: string }) {
 
 /**
  * FlipCountdown Component
- * Displays a countdown timer to midnight with flip-style digits
+ * Displays a countdown timer with flip-style digits
+ * Pure display component - receives timeLeft from parent
+ * @param timeLeft - The remaining time to display
  */
-export default function FlipCountdown() {
-  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    setTimeLeft(getTimeUntilMidnight());
-
-    const interval = setInterval(() => {
-      setTimeLeft(getTimeUntilMidnight());
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Prevent hydration mismatch
-  if (!mounted) {
-    return (
-      <div className="flex items-center gap-1">
-        <FlipDigit value="0" />
-        <FlipDigit value="0" />
-        <span className="text-sm font-bold text-muted-foreground">:</span>
-        <FlipDigit value="0" />
-        <FlipDigit value="0" />
-        <span className="text-sm font-bold text-muted-foreground">:</span>
-        <FlipDigit value="0" />
-        <FlipDigit value="0" />
-      </div>
-    );
-  }
-
+export default function FlipCountdown({ timeLeft }: FlipCountdownProps) {
   const hours = timeLeft.hours.toString().padStart(2, "0");
   const minutes = timeLeft.minutes.toString().padStart(2, "0");
   const seconds = timeLeft.seconds.toString().padStart(2, "0");

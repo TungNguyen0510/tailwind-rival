@@ -1,24 +1,24 @@
 "use client";
 
-import ImageCompareSlider from "./ImageCompareSlider";
+import ImageCompareSlider from "@/components/play/ImageCompareSlider";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { ColorChip } from "./ui/color-chip";
+import { ColorChip } from "@/components/ui/color-chip";
 import { User } from "@supabase/supabase-js";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Card, CardContent } from "./ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   getUserStats,
   getGlobalStats,
   getUserDisplayInfo,
 } from "@/app/actions";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Separator } from "./ui/separator";
-import { Switch } from "./ui/switch";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 import { UserDisplayInfo } from "@/types/user-settings";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Percent, Ruler, Star, Users, Zap } from "lucide-react";
 
 const TargetAndOutput = ({

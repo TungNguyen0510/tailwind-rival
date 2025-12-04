@@ -9,7 +9,7 @@ import {
   DropzoneEmptyState,
   useDropzoneContext,
   formatBytes,
-} from "@/components/dropzone";
+} from "@/components/ui/dropzone";
 import {
   InputGroup,
   InputGroupAddon,
