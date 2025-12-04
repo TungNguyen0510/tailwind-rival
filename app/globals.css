@@ -181,6 +181,24 @@
       height: 0;
     }
   }
+
+}
+
+@keyframes scroll-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-x {
+  animation: scroll-x 60s linear infinite;
+}
+
+.animate-scroll-x:hover {
+  animation-play-state: paused;
 }
 
 @layer base {
@@ -190,4 +208,14 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+::-moz-selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
 }

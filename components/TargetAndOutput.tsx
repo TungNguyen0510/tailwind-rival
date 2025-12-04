@@ -15,11 +15,11 @@ import {
   getUserDisplayInfo,
 } from "@/app/actions";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { getAccuracyColor } from "@/utils/utils";
-import { cn } from "@/lib/utils";
 import { Separator } from "./ui/separator";
 import { Switch } from "./ui/switch";
 import { UserDisplayInfo } from "@/types/user-settings";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { Percent, Ruler, Star, Users, Zap } from "lucide-react";
 
 const TargetAndOutput = ({
   publicUrl,
@@ -34,13 +34,14 @@ const TargetAndOutput = ({
 }) => {
   const [isDiff, setIsDiff] = useState(false);
   const [userStats, setUserStats] = useState<{
-    lastScore: number | null;
-    highScore: number | null;
+    last: { accuracy: number; score: number; codeLength: number } | null;
+    best: { accuracy: number; score: number; codeLength: number } | null;
   } | null>(null);
   const [globalStats, setGlobalStats] = useState<{
     totalPlayers: number;
     averageSuccessRate: number;
     averageCodeLength: number;
+    averageScore: number;
   } | null>(null);
 
   // State for user display info (prioritizes user_settings)
@@ -132,40 +133,32 @@ const TargetAndOutput = ({
               <div className="grid grid-cols-2 gap-3">
                 <Card>
                   <CardContent className="flex flex-col items-center justify-center p-4">
-                    <span className="text-xs text-muted-foreground mb-1">
+                    <Star className="size-4 text-yellow-500 mb-2" />
+                    {userStats?.last ? (
+                      <div className="flex items-center gap-1 text-lg">
+                        <span className="font-bold">{userStats.last.score.toFixed(0)}</span> <span className="text-sm text-muted-foreground">&#123;{userStats.last.codeLength}&#125;</span>
+                      </div>
+                    ) : (
+                      <span className="text-lg font-bold">—</span>
+                    )}
+                    <span className="text-sm text-muted-foreground/50 mb-1">
                       Last Score
                     </span>
-                    {userStats?.lastScore ? (
-                      <span
-                        className={cn(
-                          "text-2xl font-bold",
-                          getAccuracyColor(userStats.lastScore, "text")
-                        )}
-                      >
-                        {userStats.lastScore.toFixed(2)}%
-                      </span>
-                    ) : (
-                      <span className="text-2xl font-bold">—</span>
-                    )}
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="flex flex-col items-center justify-center p-4">
-                    <span className="text-xs text-muted-foreground mb-1">
-                      High Score
-                    </span>
-                    {userStats?.highScore ? (
-                      <span
-                        className={cn(
-                          "text-2xl font-bold",
-                          getAccuracyColor(userStats.highScore, "text")
-                        )}
-                      >
-                        {userStats.highScore.toFixed(2)}%
-                      </span>
+                    <Zap className="size-4 text-yellow-500 mb-2" />
+                    {userStats?.best ? (
+                      <div className="flex items-center gap-1 text-lg">
+                        <span className="font-bold">{userStats.best.score.toFixed(0)}</span> <span className="text-sm text-muted-foreground">&#123;{userStats.best.codeLength}&#125;</span>
+                      </div>
                     ) : (
-                      <span className="text-2xl font-bold">—</span>
+                      <span className="text-lg font-bold">—</span>
                     )}
+                    <span className="text-sm text-muted-foreground/50 mb-1">
+                      Best Score
+                    </span>
                   </CardContent>
                 </Card>
               </div>
@@ -174,35 +167,69 @@ const TargetAndOutput = ({
             <TabsContent value="global-stats" className="space-y-3">
               <div className="grid grid-cols-2 gap-2">
                 <Card>
-                  <CardContent className="flex flex-col items-center justify-center p-3">
-                    <span className="text-xs text-muted-foreground mb-1 text-center">
-                      Players
-                    </span>
-                    <span className="text-xl font-bold">
-                      {globalStats?.totalPlayers ?? 0}
-                    </span>
+                  <CardContent className="flex items-center gap-4 p-3">
+                    <div className="flex items-center justify-center p-2 border rounded-full bg-muted">
+                      <Users className="size-6 text-zinc-600" />
+                    </div>
+
+                    <div className="flex flex-col items-start justify-center">
+                      <span className="text-sm text-muted-foreground/50 mb-1 text-center">
+                        Players
+                      </span>
+                      <span className="text-lg font-bold text-yellow-600">
+                        {globalStats?.totalPlayers ?? 0}
+                      </span>
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardContent className="flex flex-col items-center justify-center p-3">
-                    <span className="text-xs text-muted-foreground mb-1 text-center">
-                      Avg Accuracy
-                    </span>
-                    <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                      {globalStats?.averageSuccessRate
-                        ? `${globalStats.averageSuccessRate.toFixed(1)}%`
-                        : "—"}
-                    </span>
+                  <CardContent className="flex items-center gap-4 p-3">
+                    <div className="flex items-center justify-center p-2 border rounded-full bg-muted">
+                      <Percent className="size-6 text-blue-600" />
+                    </div>
+
+                    <div className="flex flex-col items-start justify-center">
+                      <span className="text-sm text-muted-foreground/50 mb-1 text-center">
+                        Success rate
+                      </span>
+                      <span className="text-lg font-bold text-yellow-600">
+                        {globalStats?.averageSuccessRate
+                          ? `${globalStats.averageSuccessRate.toFixed(1)}%`
+                          : "—"}
+                      </span>
+                    </div>
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardContent className="flex flex-col items-center justify-center p-3">
-                    <span className="text-xs text-muted-foreground mb-1 text-center">
-                      Avg Chars
-                    </span>
-                    <span className="text-xl font-bold text-purple-600 dark:text-purple-400">
-                      {globalStats?.averageCodeLength ?? 0}
-                    </span>
+                  <CardContent className="flex items-center gap-4 p-3">
+                    <div className="flex items-center justify-center p-2 border rounded-full bg-muted">
+                      <Star className="size-6 text-yellow-500" />
+                    </div>
+
+                    <div className="flex flex-col items-start justify-center">
+                      <span className="text-sm text-muted-foreground/50 mb-1 text-center">
+                        Avg. score
+                      </span>
+                      <span className="text-lg font-bold text-yellow-600">
+                        {globalStats?.averageScore ?? 0}
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="flex items-center gap-4 p-3">
+                    <div className="flex items-center justify-center p-2 border rounded-full bg-muted">
+                      <Ruler className="size-6 text-purple-500" />
+                    </div>
+
+                    <div className="flex flex-col items-start justify-center">
+                      <span className="text-sm text-muted-foreground/50 mb-1 text-center">
+                        Avg. chars
+                      </span>
+                      <span className="text-lg font-bold text-yellow-600">
+                        {globalStats?.averageCodeLength ?? 0}
+                      </span>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -227,21 +254,29 @@ const TargetAndOutput = ({
           {colors.length > 0 && (
             <div className="flex flex-col gap-2 mt-4">
               <div className="flex items-center gap-2">
-                <span className="text-muted-foreground/50 text-sm">
-                  Colors ( click to copy )
+                <span className="text-muted-foreground/50/50 text-sm">
+                  Colors
                 </span>
                 <Separator orientation="horizontal" className="flex-1 w-full" />
               </div>
               <div className="flex flex-wrap gap-2">
                 {colors?.map((color) => (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={() => handleCopyColor(color)}
-                    className="focus:outline-none cursor-pointer transition-transform active:scale-95"
-                  >
-                    <ColorChip color={color} />
-                  </button>
+                  <TooltipProvider key={color}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyColor(color)}
+                          className="focus:outline-none cursor-pointer transition-transform active:scale-95"
+                        >
+                          <ColorChip color={color} />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" sideOffset={6}>
+                        Click to copy
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 ))}
               </div>
             </div>
@@ -264,7 +299,7 @@ const TargetAndOutput = ({
                           height={24}
                           className="rounded-full size-6 overflow-hidden cursor-pointer"
                         />
-                        <AvatarFallback className="text-xs">
+                        <AvatarFallback className="text-sm">
                           {creatorInfo.displayName
                             .split(" ")
                             .map((n: string) => n[0])

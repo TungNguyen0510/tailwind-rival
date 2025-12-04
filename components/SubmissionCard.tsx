@@ -94,7 +94,7 @@ const SubmissionCard = ({
 
           <div className="flex items-start justify-between gap-2 mb-2">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <Badge
                   variant={
                     submission.accuracy === 100 ? "default" : "secondary"
@@ -103,6 +103,11 @@ const SubmissionCard = ({
                 >
                   {submission.accuracy.toFixed(2)}%
                 </Badge>
+                {submission.score !== undefined && submission.score > 0 && (
+                  <Badge variant="outline" className="text-xs">
+                    🏆 {submission.score.toFixed(0)} pts
+                  </Badge>
+                )}
                 {isBest && (
                   <Badge
                     variant="outline"

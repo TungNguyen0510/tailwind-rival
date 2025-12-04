@@ -26,9 +26,9 @@ export const StatsCard = ({ value, label, icon }: StatsCardProps) => {
       )}
 
       <CardContent
-        className={`flex flex-col items-center justify-center ${icon ? "pt-8 pb-6" : "p-6"}`}
+        className={`flex px-2 flex-col items-center justify-center ${icon ? "pt-8 pb-6" : "py-6"}`}
       >
-        <div className="text-4xl font-bold text-yellow-400">
+        <div className="text-2xl font-bold text-yellow-600">
           {value !== null ? value : "-"}
         </div>
         <div className="text-sm text-muted-foreground/70 mt-2">{label}</div>

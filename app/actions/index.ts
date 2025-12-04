@@ -9,7 +9,13 @@ export {
   getTopSubmissions,
 } from "./submission";
 
-export { getUserStats, getGlobalStats } from "./stats";
+export {
+  getUserStats,
+  getGlobalStats,
+  getGlobalLeaderboard,
+  getStreakLeaderboard,
+  getUserRankAndScore,
+} from "./stats";
 
 export { saveUserSettings, getUserSettings } from "./settings";
 
