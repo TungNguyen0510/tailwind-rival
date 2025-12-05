@@ -27,6 +27,7 @@ const PlaygroundIframe = React.forwardRef<HTMLIFrameElement, IframeProps>(
             }
           })
         </script>
+        <style>body{overflow: hidden}</style>
       </head>
       <body>
         ${playground}

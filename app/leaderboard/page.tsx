@@ -62,14 +62,14 @@ export default async function Leaderboard() {
     if (!isInStreakTop100) {
       const { stats } = await getUserProfileStats(currentUser.id);
       if (stats) {
-        // Calculate user's streak rank
+        // Calculate user's streak rank based on longest_streak
         const allStreaks = streakLeaderboard.map((e) => e.streak);
-        const userStreak = stats.dayStreak;
+        const userLongestStreak = stats.longestStreak || 0;
         const rank =
-          allStreaks.filter((s) => s > userStreak).length +
+          allStreaks.filter((s) => s > userLongestStreak).length +
           streakLeaderboard.length +
           1;
-        currentUserStreakRank = { rank, streak: userStreak };
+        currentUserStreakRank = { rank, streak: userLongestStreak };
       }
     }
   }

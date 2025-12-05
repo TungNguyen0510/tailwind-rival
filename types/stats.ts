@@ -14,11 +14,13 @@ export interface LeaderboardEntry {
 
 /**
  * Streak leaderboard entry
+ * Uses longest_streak for ranking
  */
 export interface StreakLeaderboardEntry {
   rank: number;
   userId: string;
-  streak: number;
+  streak: number; // longest_streak for leaderboard
+  currentStreak: number; // current_streak (optional, for display)
 }
 
 /**
@@ -54,7 +56,8 @@ export interface GlobalChallengeStats {
 export interface UserProfileStats {
   globalRank: number | null;
   completedChallenges: number;
-  dayStreak: number;
+  currentStreak: number;
+  longestStreak: number;
   avgAccuracy: number;
   avgCodeLength: number;
   totalScore: number;

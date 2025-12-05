@@ -19,6 +19,7 @@ import {
   Globe,
   Percent,
   Star,
+  FlameKindling,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -201,7 +202,7 @@ const ProfilePage = async ({
                 {userInfo.display_name || "Unknown"}
               </h1>
 
-              <div className="grid grid-cols-2 gap-4 w-full mt-4">
+              <div className="grid grid-cols-3 gap-4 w-full mt-4">
                 <StatsCard
                   value={stats?.globalRank ?? null}
                   label="Global Rank"
@@ -209,9 +210,15 @@ const ProfilePage = async ({
                 />
 
                 <StatsCard
-                  value={stats?.dayStreak ?? 0}
-                  label="Day Streak"
+                  value={stats?.currentStreak ?? 0}
+                  label="Current Streak"
                   icon={<Flame className="size-6 text-orange-500" />}
+                />
+
+                <StatsCard
+                  value={stats?.longestStreak ?? 0}
+                  label="Longest Streak"
+                  icon={<FlameKindling className="size-6 text-red-500" />}
                 />
               </div>
 

@@ -113,10 +113,10 @@ const PlaygroundContent = () => {
 
   return (
     <div className="flex h-[calc(100vh-48px-40px)] max-h-[calc(100vh-48px-40px)] w-screen">
-      <div className="shrink flex-1 flex flex-col border-r max-w-[calc(100vw-433px)] min-w-[432px]">
+      <div className="shrink flex-1 flex flex-col border-r max-w-[calc(100vw-865px)] min-w-[432px]">
         <PlaygroundEditor />
       </div>
-      <div className="lg:max-w-[433px] min-w-[433px] flex max-h-[calc(100vh-48px-32px)]">
+      <div className="lg:max-w-[865px] min-w-[865px] flex max-h-[calc(100vh-48px-32px)]">
         <div className="flex-1">
           <div className="flex items-center justify-between p-1 px-4 border-b border-r bg-accent">
             <span className="font-medium">Code output</span>
@@ -128,18 +128,20 @@ const PlaygroundContent = () => {
               className="w-[400px] h-[300px]"
             />
 
-            <ColorInputForm colors={colors} onColorsChange={setColors} />
+            <div className="flex flex-col gap-2 max-w-[400px]">
+              <ColorInputForm colors={colors} onColorsChange={setColors} />
 
-            <Button onClick={handleCreateChallenge} disabled={isCreating}>
-              {isCreating ? "Creating..." : "Create challenge"}
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={handleDownloadImage}
-              disabled={isDownloading}
-            >
-              {isDownloading ? "Downloading..." : "Download"}
-            </Button>
+              <Button onClick={handleCreateChallenge} disabled={isCreating}>
+                {isCreating ? "Creating..." : "Create challenge"}
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={handleDownloadImage}
+                disabled={isDownloading}
+              >
+                {isDownloading ? "Downloading..." : "Download"}
+              </Button>
+            </div>
           </div>
         </div>
       </div>

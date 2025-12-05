@@ -1,5 +1,4 @@
 import { ImageResponse } from "next/og";
-import { defaultUrl } from "@/constants/url";
 
 /**
  * OG Image Generation Route for Home Page
@@ -8,8 +7,6 @@ import { defaultUrl } from "@/constants/url";
  * @returns ImageResponse - The generated OG image
  */
 export async function GET() {
-  const logoImageUrl = `${defaultUrl}/icons/logo.png`;
-
   return new ImageResponse(
     (
       <div
@@ -26,27 +23,34 @@ export async function GET() {
         }}
       >
         {/* Logo */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="100"
+          height="100"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#1e9df1"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          className="lucide lucide-swords-icon lucide-swords"
         >
-          <img
-            src={logoImageUrl}
-            alt="Tailwind Rival"
-            width={100}
-            height={100}
-          />
-        </div>
+          <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
+          <line x1="13" x2="19" y1="19" y2="13" />
+          <line x1="16" x2="20" y1="16" y2="20" />
+          <line x1="19" x2="21" y1="21" y2="19" />
+          <polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5" />
+          <line x1="5" x2="9" y1="14" y2="18" />
+          <line x1="7" x2="4" y1="17" y2="20" />
+          <line x1="3" x2="5" y1="19" y2="21" />
+        </svg>
 
         {/* Title */}
         <h1
           style={{
             fontSize: "80px",
             fontWeight: "800",
-            color: "#1e9df1",
+            color: "#ffffff",
             marginTop: "16px",
             marginBottom: "0",
             fontStyle: "italic",
