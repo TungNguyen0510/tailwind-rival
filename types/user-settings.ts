@@ -1,6 +1,6 @@
 export type UserSettings = {
   user_id: string;
-  is_admin: boolean | null;
+  is_admin?: boolean | null;
   avatar_url: string | null;
   display_name: string | null;
   website: string | null;
