@@ -8,10 +8,7 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     <main className="min-h-screen flex flex-col items-center">
       <div className="flex-1 w-full flex flex-col items-center">
         <Header />
-        <div className="w-full flex min-h-[calc(100vh-48px-40px)]">
-          <AppSidebar />
-          <div className="flex-1">{children}</div>
-        </div>
+        <AppSidebar>{children}</AppSidebar>
         <Footer />
       </div>
     </main>

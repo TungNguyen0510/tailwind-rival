@@ -7,7 +7,7 @@ function Header() {
     <nav className="sticky top-0 left-0 w-full flex justify-center border-b border-b-foreground/10 h-12 z-20 bg-card select-none">
       <div className="w-full flex justify-between items-center p-2 pl-14 pr-4 md:px-14 text-sm">
         <div className="flex gap-10 justify-between items-center transition-colors">
-          <div className="flex gap-5 items-center font-semibold text-lg">
+          <div className="flex gap-5 items-center font-semibold text-base lg:text-lg">
             <Link
               href={"/"}
               className="flex gap-2 items-center hover:text-primary"

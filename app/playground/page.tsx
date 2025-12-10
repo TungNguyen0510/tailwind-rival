@@ -10,7 +10,9 @@ import { usePlaygroundContext } from "@/context/PlaygroudContextProvider";
 import { createChallenge } from "@/app/actions";
 import { toast } from "sonner";
 import { playgroundDefaultHtml } from "@/constants/html";
-import ColorInputForm from "@/components/playground/ColorInputForm";
+import { Spinner } from "@/components/ui/spinner";
+import { ColorChip } from "@/components/ui/color-chip";
+import { extractColorsFromCode } from "@/utils/utils";
 
 const PlaygroundContent = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -111,6 +113,11 @@ const PlaygroundContent = () => {
     }
   };
 
+  const handleFilterColors = () => {
+    const extractedColors = extractColorsFromCode(playground);
+    setColors(extractedColors);
+  };
+
   return (
     <div className="flex h-[calc(100vh-48px-40px)] max-h-[calc(100vh-48px-40px)] w-screen">
       <div className="shrink flex-1 flex flex-col border-r max-w-[calc(100vw-865px)] min-w-[432px]">
@@ -129,17 +136,41 @@ const PlaygroundContent = () => {
             />
 
             <div className="flex flex-col gap-2 max-w-[400px]">
-              <ColorInputForm colors={colors} onColorsChange={setColors} />
+              <Button variant="secondary" onClick={handleFilterColors}>
+                Filter color
+              </Button>
+
+              <div className="flex min-h-9 w-full flex-wrap items-center gap-1 rounded-md border border-card-foreground/10 bg-transparent px-1 py-1 text-base shadow-sm transition-colors focus-within:outline-none focus-within:ring-1 focus-within:ring-ring md:text-sm">
+                {colors.length === 0 ? (
+                  <span className="px-1 text-sm text-muted-foreground text-center w-full">
+                    No colors detected yet
+                  </span>
+                ) : (
+                  colors.map((color) => (
+                    <ColorChip
+                      key={color}
+                      color={color}
+                      onRemove={() =>
+                        setColors(colors.filter((item) => item !== color))
+                      }
+                    />
+                  ))
+                )}
+              </div>
 
               <Button onClick={handleCreateChallenge} disabled={isCreating}>
-                {isCreating ? "Creating..." : "Create challenge"}
+                {isCreating ? (
+                  <Spinner className="size-4" />
+                ) : (
+                  "Create challenge"
+                )}
               </Button>
               <Button
                 variant="secondary"
                 onClick={handleDownloadImage}
                 disabled={isDownloading}
               >
-                {isDownloading ? "Downloading..." : "Download"}
+                {isDownloading ? <Spinner className="size-4" /> : "Download"}
               </Button>
             </div>
           </div>
