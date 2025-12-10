@@ -1,25 +1,72 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useMemo } from "react";
 import html2canvas from "html2canvas-pro";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 import PlaygroundEditor from "@/components/playground/PlaygroundEditor";
 import { Button } from "@/components/ui/button";
 import PlaygroundContextProvider from "@/context/PlaygroudContextProvider";
 import PlaygroundIframe from "@/components/playground/PlaygroundIframe";
 import { usePlaygroundContext } from "@/context/PlaygroudContextProvider";
-import { createChallenge } from "@/app/actions";
+import {
+  createChallenge,
+  getUserSettings,
+  getExistingTargetDays,
+} from "@/app/actions";
 import { toast } from "sonner";
 import { playgroundDefaultHtml } from "@/constants/html";
 import { Spinner } from "@/components/ui/spinner";
 import { ColorChip } from "@/components/ui/color-chip";
-import { extractColorsFromCode } from "@/utils/utils";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { debounce, extractColorsFromCode } from "@/utils/utils";
+import { cn } from "@/lib/utils";
 
 const PlaygroundContent = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [colors, setColors] = useState<string[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [targetDay, setTargetDay] = useState<Date | undefined>(undefined);
+  const [openCalendar, setOpenCalendar] = useState(false);
+  const [disabledDates, setDisabledDates] = useState<Date[]>([]);
   const { playground, setPlayground } = usePlaygroundContext();
+
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      const result = await getUserSettings();
+      if (result.success && result.settings?.is_admin) {
+        setIsAdmin(true);
+        const targetDaysResult = await getExistingTargetDays();
+        if (targetDaysResult.success && targetDaysResult.targetDays) {
+          const dates = targetDaysResult.targetDays.map(
+            (day) => new Date(day + "T00:00:00")
+          );
+          setDisabledDates(dates);
+        }
+      }
+    };
+    checkAdminStatus();
+  }, []);
+
+  const debouncedExtractColors = useMemo(
+    () =>
+      debounce((code: string) => {
+        const extractedColors = extractColorsFromCode(code);
+        setColors(extractedColors);
+      }, 1000),
+    []
+  );
+
+  useEffect(() => {
+    debouncedExtractColors(playground);
+  }, [playground, debouncedExtractColors]);
 
   const captureIframeImage = async (): Promise<string | null> => {
     if (!iframeRef.current) {
@@ -67,14 +114,36 @@ const PlaygroundContent = () => {
       // Convert playground code to JSON string
       const solutionJson = JSON.stringify({ code: playground });
 
-      const result = await createChallenge(imageBase64, solutionJson, colors);
+      const targetDayString = targetDay
+        ? format(targetDay, "yyyy-MM-dd")
+        : undefined;
+
+      const result = await createChallenge(
+        imageBase64,
+        solutionJson,
+        colors,
+        targetDayString
+      );
 
       if (result.success) {
-        toast.success("Challenge created successfully!");
+        toast.success("Challenge created successfully!", {
+          description: (
+            <div className="flex flex-col gap-1">
+              <p className="text-muted-foreground">
+                Thank you for your contribution!
+              </p>
+            </div>
+          ),
+        });
 
         setPlayground(playgroundDefaultHtml);
         localStorage.setItem("playground", playgroundDefaultHtml);
         setColors([]);
+        // Add the newly created date to disabled dates
+        if (targetDay) {
+          setDisabledDates((prev) => [...prev, targetDay]);
+        }
+        setTargetDay(undefined);
       } else {
         toast.error(result.error || "Failed to create challenge");
       }
@@ -113,11 +182,6 @@ const PlaygroundContent = () => {
     }
   };
 
-  const handleFilterColors = () => {
-    const extractedColors = extractColorsFromCode(playground);
-    setColors(extractedColors);
-  };
-
   return (
     <div className="flex h-[calc(100vh-48px-40px)] max-h-[calc(100vh-48px-40px)] w-screen">
       <div className="shrink flex-1 flex flex-col border-r max-w-[calc(100vw-865px)] min-w-[432px]">
@@ -136,10 +200,6 @@ const PlaygroundContent = () => {
             />
 
             <div className="flex flex-col gap-2 max-w-[400px]">
-              <Button variant="secondary" onClick={handleFilterColors}>
-                Filter color
-              </Button>
-
               <div className="flex min-h-9 w-full flex-wrap items-center gap-1 rounded-md border border-card-foreground/10 bg-transparent px-1 py-1 text-base shadow-sm transition-colors focus-within:outline-none focus-within:ring-1 focus-within:ring-ring md:text-sm">
                 {colors.length === 0 ? (
                   <span className="px-1 text-sm text-muted-foreground text-center w-full">
@@ -157,6 +217,40 @@ const PlaygroundContent = () => {
                   ))
                 )}
               </div>
+
+              {isAdmin && (
+                <Popover open={openCalendar} onOpenChange={setOpenCalendar}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !targetDay && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {targetDay ? (
+                        format(targetDay, "PPP")
+                      ) : (
+                        <span>Select target day</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-fit overflow-hidden p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      captionLayout="dropdown"
+                      selected={targetDay}
+                      onSelect={(date) => {
+                        setTargetDay(date)
+                        setOpenCalendar(false)
+                      }}
+                      disabled={[{ before: new Date() }, ...disabledDates]}
+                      className="w-80"
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
 
               <Button onClick={handleCreateChallenge} disabled={isCreating}>
                 {isCreating ? (

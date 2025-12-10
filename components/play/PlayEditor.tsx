@@ -1,11 +1,10 @@
 "use client";
 
 import { usePlayContext } from "@/context/PlayContextProvider";
-import MonacoEditor from "@monaco-editor/react";
-
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import useKeyHold from "@/hooks/useKeyHold";
+import MonacoEditor from "@/components/ui/MonacoEditor";
 
 const Editor = ({ id }: { id: string }) => {
   const { theme } = useTheme();

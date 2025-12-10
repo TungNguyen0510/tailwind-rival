@@ -27,29 +27,28 @@ export default function PlaygroundLoading() {
       </div>
 
       {/* Preview / Controls pane */}
-      <div className="lg:max-w-[433px] min-w-[433px] flex max-h-[calc(100vh-48px-32px)]">
+      <div className="lg:max-w-[865px] min-w-[865px] flex max-h-[calc(100vh-48px-32px)]">
         <div className="flex-1 flex flex-col">
           <div className="flex items-center justify-between p-1 px-4 border-b border-r bg-accent">
             <Skeleton className="h-5 w-32" />
           </div>
           <div className="flex flex-col gap-4 p-4 border-r h-full bg-accent/50">
             {/* Iframe preview */}
-            <Skeleton className="w-[400px] h-[300px] rounded-md" />
+            <Skeleton className="w-100 h-[300px] rounded-md" />
 
             {/* Colors input form */}
-            <div className="space-y-2 w-full">
-              <Skeleton className="h-4 w-24" />
+            <div className="space-y-2 w-100">
               <div className="flex flex-wrap gap-2">
                 {Array.from({ length: 5 }).map((_, i) => (
-                  <Skeleton key={i} className="h-10 flex-1 min-w-[120px]" />
+                  <Skeleton key={i} className="h-10 flex-1 min-w-[60px]" />
                 ))}
               </div>
             </div>
 
             {/* Action buttons */}
             <div className="flex flex-col gap-2">
-              <Skeleton className="h-10 w-full" />
-              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-100" />
+              <Skeleton className="h-10 w-100" />
             </div>
           </div>
         </div>

@@ -22,9 +22,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarTrigger,
+  SidebarProvider,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { createClient } from "@/utils/supabase/client";
-import { SidebarProvider } from "@/components/ui/sidebar";
 
 type NavItem = {
   label: string;
@@ -38,10 +39,17 @@ const playLinks: NavItem[] = [
   { label: "Playground", href: "/playground", icon: FlaskConical },
 ];
 
-function SidebarNavContent({ onNavigate }: { onNavigate?: () => void }) {
+function SidebarNavContent() {
   const supabase = createClient();
   const pathname = usePathname();
   const [profileHref, setProfileHref] = React.useState("");
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  const handleNavigate = () => {
+    if (isMobile) {
+      setOpenMobile(false);
+    }
+  };
 
   React.useEffect(() => {
     supabase.auth
@@ -52,7 +60,7 @@ function SidebarNavContent({ onNavigate }: { onNavigate?: () => void }) {
           setProfileHref(`/profile/${userId}`);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const personalLinks: NavItem[] = [
@@ -70,7 +78,7 @@ function SidebarNavContent({ onNavigate }: { onNavigate?: () => void }) {
                 <Link
                   href="/"
                   className="flex items-center gap-2"
-                  onClick={onNavigate}
+                  onClick={handleNavigate}
                 >
                   <Home className="size-4" />
                   <span>Home</span>
@@ -94,7 +102,7 @@ function SidebarNavContent({ onNavigate }: { onNavigate?: () => void }) {
                     <Link
                       href={item.href}
                       className="flex items-center gap-2"
-                      onClick={onNavigate}
+                      onClick={handleNavigate}
                     >
                       <Icon className="size-4" />
                       <span>{item.label}</span>
@@ -122,7 +130,7 @@ function SidebarNavContent({ onNavigate }: { onNavigate?: () => void }) {
                       <Link
                         href={item.href}
                         className="flex items-center gap-2"
-                        onClick={onNavigate}
+                        onClick={handleNavigate}
                       >
                         <Icon className="size-4" />
                         <span>{item.label}</span>
@@ -157,7 +165,6 @@ export default function AppSidebar({
     <SidebarProvider
       className="flex flex-col min-h-[calc(100vh-48px-40px)]! relative"
       forceMobile={isPlaySheet}
-      defaultOpen={!isPlaySheet}
     >
       <SidebarTrigger className="absolute -top-10.5 left-3 z-20" />
       <div className="flex flex-1">

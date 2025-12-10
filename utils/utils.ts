@@ -107,7 +107,7 @@ export const calculateScore = (accuracy: number, codeLength: number): number => 
 
 export const extractColorsFromCode = (code: string): string[] => {
   const colorPattern =
-    /\b(?:bg|text|border|outline|divide|ring|shadow|fill|accent|stroke|caret|placeholder|decoration|from|via|to)-(?:\[(#[^\]]+)\]|([a-z]+-\d{1,3}(?:\/\d{1,3})?))/gi;
+    /\b(?:bg|border|outline|divide|ring|shadow|fill|accent|stroke|caret|placeholder|decoration|from|via|to)-(?:\[(#[^\]]+)\]|([a-z]+-\d{1,3}(?:\/\d{1,3})?))/gi;
   const colorSet = new Set<string>();
 
   let match: RegExpExecArray | null;
@@ -135,9 +135,9 @@ export const parseColorToRgb = (
     const expandHex =
       hex.length === 3
         ? hex
-            .split("")
-            .map((c) => c + c)
-            .join("")
+          .split("")
+          .map((c) => c + c)
+          .join("")
         : hex.slice(0, 6);
     const intVal = parseInt(expandHex, 16);
     return {

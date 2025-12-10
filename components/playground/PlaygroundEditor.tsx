@@ -1,6 +1,6 @@
 "use client";
 
-import MonacoEditor from "@monaco-editor/react";
+import MonacoEditor from "@/components/ui/MonacoEditor"
 
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
