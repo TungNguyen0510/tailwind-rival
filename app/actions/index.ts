@@ -1,6 +1,6 @@
 export { signInWithOAuth, signOutAction } from "./auth";
 
-export { createChallenge } from "./challenge";
+export { createChallenge, getExistingTargetDays } from "./challenge";
 
 export {
   submitChallenge,

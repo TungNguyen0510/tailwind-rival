@@ -17,6 +17,10 @@ const PlayPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     .eq("id", id)
     .single();
 
+  if (!challenge) {
+    notFound();
+  }
+
   const { data: userCreated } = await adminAuthClient.getUserById(
     challenge.user_created
   );
@@ -25,10 +29,6 @@ const PlayPage = async ({ params }: { params: Promise<{ id: string }> }) => {
     data: { user },
   } = await supabase.auth.getUser();
   const isAuthenticated = !!user;
-
-  if (!challenge) {
-    notFound();
-  }
 
   return (
     <PlayContextProvider id={id}>

@@ -297,21 +297,3 @@ export const TAILWIND_COLORS: Record<string, Record<string, string>> = {
   },
 };
 
-/**
- * Converts Tailwind color string to CSS color value.
- *
- * @param color - Tailwind color string (e.g., "blue-500", "yellow-400")
- * @returns CSS color value (hex) or null if color not found
- */
-export const getTailwindColorValue = (color: string): string | null => {
-  const match = color.match(/^([a-z]+)(?:-(\d+))?$/);
-  if (!match) return null;
-
-  const [, colorName, shadeRaw] = match;
-  const shade = shadeRaw ?? "500";
-  const colorPalette = TAILWIND_COLORS[colorName];
-  if (!colorPalette) return null;
-
-  return colorPalette[shade] || null;
-};
-

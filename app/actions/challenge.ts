@@ -3,6 +3,49 @@
 import { createClient } from "@/utils/supabase/server";
 
 /**
+ * Fetches all existing challenge target days from the database
+ * Used to disable already-taken dates in the admin calendar
+ *
+ * @returns Object with success status and array of target day strings (YYYY-MM-DD format)
+ */
+export const getExistingTargetDays = async () => {
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("challenges")
+      .select("target_day")
+      .not("target_day", "is", null);
+
+    if (error) {
+      console.error("Error fetching target days:", error);
+      return {
+        success: false,
+        error: error.message,
+        targetDays: [],
+      };
+    }
+
+    // Extract and filter unique target days
+    const targetDays = data
+      .map((item) => item.target_day)
+      .filter((day): day is string => day !== null);
+
+    return {
+      success: true,
+      targetDays,
+    };
+  } catch (error) {
+    console.error("Unexpected error fetching target days:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "An unexpected error occurred",
+      targetDays: [],
+    };
+  }
+};
+
+/**
  * Creates a new challenge by uploading an image to Supabase storage
  * and creating a record in the challenges table.
  * 
@@ -14,7 +57,8 @@ import { createClient } from "@/utils/supabase/server";
 export const createChallenge = async (
   imageBase64: string,
   solution: string,
-  colors: string[]
+  colors: string[],
+  targetDay?: string
 ) => {
   try {
     const supabase = await createClient();
@@ -64,6 +108,7 @@ export const createChallenge = async (
         image: publicUrl,
         solution: solution,
         colors: colors,
+        target_day: targetDay,
       })
       .select()
       .single();

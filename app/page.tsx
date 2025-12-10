@@ -61,7 +61,7 @@ export default async function Home() {
         )}
 
         <div className="flex flex-col gap-4 p-12 container mx-auto">
-          <div className="flex gap-4 items-center justify-between">
+          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             <div>
               <h2 className="font-bold text-2xl">Daily challenges</h2>
               <p className="text-muted-foreground/70">

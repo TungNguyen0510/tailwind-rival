@@ -18,7 +18,7 @@ const PlayIframe = React.forwardRef<HTMLIFrameElement, IframeProps>(
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://unpkg.com/tailwindcss-cdn@3.4.1/tailwindcss.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
         <script type="module">
           window.addEventListener('message', (event) => {
             const { type, value } = event.data;
@@ -27,6 +27,7 @@ const PlayIframe = React.forwardRef<HTMLIFrameElement, IframeProps>(
             }
           })
         </script>
+        <style>body{overflow: hidden}</style>
       </head>
       <body>
         ${play}

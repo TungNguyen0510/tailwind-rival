@@ -9,12 +9,13 @@ export default function NotFound() {
   useDisableRightClick();
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-48px-40px)] gap-4">
-      <div className="relative size-[50%] select-none">
+      <div className="relative w-full md:w-[70%] xl:w-[50%] select-none h-[60%]">
         <div className="absolute inset-0">
           <Image
             src="/not-found.gif"
             alt="Not Found"
             fill
+            unoptimized
             className="object-cover"
           />
         </div>

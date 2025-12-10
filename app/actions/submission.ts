@@ -120,6 +120,10 @@ export const submitChallenge = async (
       };
     }
 
+    // Update user streak after successful submission
+    const { updateUserStreak } = await import("@/app/actions/stats");
+    await updateUserStreak(user.id, submissionData.created_at);
+
     return {
       success: true,
       accuracy: accuracyScore,

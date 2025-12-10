@@ -1,3 +1,4 @@
+import { TAILWIND_COLORS } from "@/constants/tailwind-color";
 import { TimeLeft } from "@/types/time";
 
 /**
@@ -101,4 +102,109 @@ export const calculateScore = (accuracy: number, codeLength: number): number => 
   const totalScore = Math.round((accuracyPoints + codeEfficiencyBonus) * 100) / 100;
 
   return totalScore;
+};
+
+
+export const extractColorsFromCode = (code: string): string[] => {
+  const colorPattern =
+    /\b(?:bg|border|outline|divide|ring|shadow|fill|accent|stroke|caret|placeholder|decoration|from|via|to)-(?:\[(#[^\]]+)\]|([a-z]+-\d{1,3}(?:\/\d{1,3})?))/gi;
+  const colorSet = new Set<string>();
+
+  let match: RegExpExecArray | null;
+  while ((match = colorPattern.exec(code)) !== null) {
+    const rawColor = match[1] ?? match[2];
+    if (!rawColor) continue;
+
+    const normalizedColor = rawColor
+      .replace(/^\[|\]$/g, "")
+      .split("/")[0]
+      .toLowerCase();
+
+    colorSet.add(normalizedColor);
+  }
+
+  return Array.from(colorSet);
+};
+
+export const parseColorToRgb = (
+  value: string
+): { r: number; g: number; b: number } | null => {
+  const hexMatch = value.match(/^#([\da-f]{3}|[\da-f]{6}|[\da-f]{8})$/i);
+  if (hexMatch) {
+    const hex = hexMatch[1];
+    const expandHex =
+      hex.length === 3
+        ? hex
+          .split("")
+          .map((c) => c + c)
+          .join("")
+        : hex.slice(0, 6);
+    const intVal = parseInt(expandHex, 16);
+    return {
+      r: (intVal >> 16) & 255,
+      g: (intVal >> 8) & 255,
+      b: intVal & 255,
+    };
+  }
+
+  const rgbMatch = value.match(
+    /^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*[\d.]+\s*)?\)$/i
+  );
+  if (rgbMatch) {
+    return {
+      r: Number(rgbMatch[1]),
+      g: Number(rgbMatch[2]),
+      b: Number(rgbMatch[3]),
+    };
+  }
+
+  return null;
+};
+
+
+/**
+ * Converts a Tailwind color token to a CSS color value.
+ * Supports:
+ * - Named Tailwind tokens (e.g., blue-500)
+ * - Direct CSS hex values (#fff, #112233)
+ * - rgb()/rgba() strings (e.g., rgb(10, 20, 30))
+ */
+export const getTailwindColorValue = (color: string): string | null => {
+  const trimmed = color.trim();
+
+  // Direct CSS colors
+  const isHex = /^#([\da-f]{3,8})$/i;
+  const isRgb = /^rgba?\([^)]+\)$/i;
+  if (isHex.test(trimmed) || isRgb.test(trimmed)) return trimmed;
+
+  // Tailwind token lookup
+  const match = trimmed.match(/^([a-z]+)(?:-(\d+))?$/);
+  if (!match) return null;
+
+  const [, colorName, shadeRaw] = match;
+  const shade = shadeRaw ?? "500";
+  const colorPalette = TAILWIND_COLORS[colorName];
+  if (!colorPalette) return null;
+
+  return colorPalette[shade] || null;
+};
+
+export const getTextColorClass = (
+  colorToken: string,
+  resolvedColor?: string | null
+): string => {
+  const colorValue = resolvedColor ?? getTailwindColorValue(colorToken);
+
+  if (colorValue) {
+    const rgb = parseColorToRgb(colorValue);
+    if (rgb) {
+      const brightness = 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
+      return brightness > 186 ? "text-black" : "text-white";
+    }
+  }
+
+  if (colorToken === "white") return "text-black";
+  if (colorToken === "black") return "text-white";
+
+  return "text-black";
 };

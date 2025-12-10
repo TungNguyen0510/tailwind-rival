@@ -18,10 +18,10 @@ export async function generateMetadata({
   const ogImageUrl = `${defaultUrl}/api/og/play/${id}`;
 
   return {
-    title: `Challenge (${challenge.target_day}) - Tailwind Rival`,
+    title: `Challenge (${challenge?.target_day || "Unknown"}) - Tailwind Rival`,
     description: "The funnest TailwindCSS game for web developers!",
     openGraph: {
-      title: `Challenge (${challenge.target_day}) - Tailwind Rival`,
+      title: `Challenge (${challenge?.target_day || "Unknown"}) - Tailwind Rival`,
       description: "The funnest TailwindCSS game for web developers!",
       url: `/play/${id}`,
       siteName: "Tailwind Rival",

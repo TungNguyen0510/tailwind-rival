@@ -1,7 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getUserDisplayInfo } from "@/app/actions/user";
 import { getUserProfileStats } from "@/app/actions/stats";
-import { defaultUrl } from "@/constants/url";
 
 /**
  * OG Image Generation Route for User Profile
@@ -31,10 +30,9 @@ export async function GET(
   // Format stats for display
   const globalRank = stats?.globalRank ?? "-";
   const targetsPlayed = stats?.completedChallenges ?? 0;
-  const currentStreak = stats?.dayStreak ?? 0;
-  const streakText = currentStreak === 1 ? "1 day" : `${currentStreak} days`;
-
-  const logoImageUrl = `${defaultUrl}/icons/logo.png`;
+  const currentStreak = stats?.currentStreak ?? 0;
+  const streakText =
+    currentStreak > 1 ? `${currentStreak} days` : `${currentStreak} day`;
 
   return new ImageResponse(
     (
@@ -62,12 +60,27 @@ export async function GET(
             gap: "8px",
           }}
         >
-          <img
-            src={logoImageUrl}
-            alt="Tailwind Rival"
-            width={42}
-            height={42}
-          />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="60"
+            height="60"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#1e9df1"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            className="lucide lucide-swords-icon lucide-swords"
+          >
+            <polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" />
+            <line x1="13" x2="19" y1="19" y2="13" />
+            <line x1="16" x2="20" y1="16" y2="20" />
+            <line x1="19" x2="21" y1="21" y2="19" />
+            <polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5" />
+            <line x1="5" x2="9" y1="14" y2="18" />
+            <line x1="7" x2="4" y1="17" y2="20" />
+            <line x1="3" x2="5" y1="19" y2="21" />
+          </svg>
         </div>
 
         {/* Main content container */}

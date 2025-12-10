@@ -8,6 +8,159 @@ import {
 import { calculateScore } from "@/utils/utils";
 
 /**
+ * Updates user streak when a new submission is made.
+ * Implements the streak calculation logic:
+ * - If first submission: current_streak = 1, longest_streak = 1
+ * - If diff = 0 (submitted today): no change
+ * - If diff = 1 (submitted yesterday): increment current_streak, update longest_streak
+ * - If diff > 1: reset current_streak = 1
+ * 
+ * @param userId - The user ID
+ * @param submissionDate - The date of the submission (Date object or ISO string)
+ * @returns Object with success status
+ */
+export const updateUserStreak = async (
+  userId: string,
+  submissionDate: Date | string
+) => {
+  try {
+    const supabase = await createClient();
+
+    // Convert submissionDate to Date object if it's a string
+    const subDate = typeof submissionDate === "string" 
+      ? new Date(submissionDate) 
+      : submissionDate;
+
+    // Get submission date in UTC (date only, no time)
+    // This ensures consistency regardless of server timezone
+    const subDateUTC = new Date(Date.UTC(
+      subDate.getUTCFullYear(),
+      subDate.getUTCMonth(),
+      subDate.getUTCDate()
+    ));
+    const submissionDateStr = subDateUTC.toISOString().split("T")[0];
+
+    // Get today's date in UTC (date only, no time)
+    // Use UTC to ensure consistency across all timezones
+    const now = new Date();
+    const todayUTC = new Date(Date.UTC(
+      now.getUTCFullYear(),
+      now.getUTCMonth(),
+      now.getUTCDate()
+    ));
+    const todayStr = todayUTC.toISOString().split("T")[0];
+
+    // Fetch current streak record
+    const { data: currentStreak, error: fetchError } = await supabase
+      .from("streaks")
+      .select("current_streak, longest_streak, last_submission_date")
+      .eq("user_id", userId)
+      .single();
+
+    // If no streak record exists, create new one
+    if (fetchError && fetchError.code === "PGRST116") {
+      // No record found, create new streak
+      const { error: insertError } = await supabase
+        .from("streaks")
+        .insert({
+          user_id: userId,
+          current_streak: 1,
+          longest_streak: 1,
+          last_submission_date: todayStr, // Use today's date (UTC)
+        });
+
+      if (insertError) {
+        console.error("Error creating streak record:", insertError);
+        return { success: false };
+      }
+
+      return { success: true };
+    }
+
+    if (fetchError) {
+      console.error("Error fetching streak:", fetchError);
+      return { success: false };
+    }
+
+    // Get last submission date from database
+    const lastSubmissionDateStr = currentStreak?.last_submission_date;
+    
+    // If no last_submission_date, treat as first submission
+    if (!lastSubmissionDateStr) {
+      const { error: updateError } = await supabase
+        .from("streaks")
+        .update({
+          current_streak: 1,
+          longest_streak: 1,
+          last_submission_date: todayStr, // Use today's date (UTC)
+          updated_at: new Date().toISOString(),
+        })
+        .eq("user_id", userId);
+
+      if (updateError) {
+        console.error("Error updating streak:", updateError);
+        return { success: false };
+      }
+
+      return { success: true };
+    }
+
+    // Compare dates as strings (YYYY-MM-DD format) to avoid timezone issues
+    // This ensures we only count one submission per day
+    if (lastSubmissionDateStr === todayStr) {
+      // User already submitted today, no change to streak
+      // Do not update last_submission_date to avoid unnecessary writes
+      return { success: true };
+    }
+
+    // Calculate day difference between today (UTC) and last_submission_date
+    const lastDateUTC = new Date(lastSubmissionDateStr + "T00:00:00Z");
+    const diffTime = todayUTC.getTime() - lastDateUTC.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    let newCurrentStreak: number;
+    let newLongestStreak: number;
+
+    if (diffDays === 1) {
+      // Continue streak: increment current_streak (yesterday -> today)
+      const current = Number(currentStreak?.current_streak || 0);
+      newCurrentStreak = current + 1;
+      newLongestStreak = Math.max(
+        Number(currentStreak?.longest_streak || 0),
+        newCurrentStreak
+      );
+    } else {
+      // Streak broken (diffDays > 1) or first submission: reset to 1
+      newCurrentStreak = 1;
+      newLongestStreak = Number(currentStreak?.longest_streak || 0);
+    }
+
+    // Update streak record
+    // Only update if last_submission_date is different from today
+    // This ensures we only count one submission per day
+    const { error: updateError } = await supabase
+      .from("streaks")
+      .update({
+        current_streak: newCurrentStreak,
+        longest_streak: newLongestStreak,
+        last_submission_date: todayStr, // Use today (UTC), not submission date
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", userId);
+
+    if (updateError) {
+      console.error("Error updating streak:", updateError);
+      return { success: false };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Unexpected error updating streak:", error);
+    return { success: false };
+  }
+};
+
+/**
  * Calculates the global leaderboard based on best score per challenge per user.
  * Only counts each user's highest score for each challenge.
  * 
@@ -202,7 +355,8 @@ export const getUserRankAndScore = async (userId: string) => {
 };
 
 /**
- * Calculates the streak leaderboard based on consecutive days with submissions.
+ * Fetches the streak leaderboard based on longest_streak from streaks table.
+ * Ranks users by their longest streak (not current streak).
  * 
  * @param limit - Maximum number of entries to return (default: 100)
  * @returns Object with success status and leaderboard entries
@@ -211,99 +365,59 @@ export const getStreakLeaderboard = async (limit: number = 100) => {
   try {
     const supabase = await createClient();
 
-    // Fetch all submissions with created_at
-    const { data: allSubmissions, error } = await supabase
-      .from("submissions")
-      .select("user_id, created_at")
-      .order("created_at", { ascending: false });
+    // Fetch all streaks, ordered by longest_streak descending
+    const { data: streaks, error } = await supabase
+      .from("streaks")
+      .select("user_id, longest_streak, current_streak, last_submission_date")
+      .order("longest_streak", { ascending: false })
+      .limit(limit);
 
     if (error) {
-      console.error("Error fetching submissions for streak leaderboard:", error);
+      console.error("Error fetching streak leaderboard:", error);
       return {
         success: false,
         leaderboard: [],
       };
     }
 
-    if (!allSubmissions || allSubmissions.length === 0) {
+    if (!streaks || streaks.length === 0) {
       return {
         success: true,
         leaderboard: [],
       };
     }
 
-    // Group submissions by user and track last submission date
-    const userSubmissions = new Map<string, string[]>();
-    const userLastSubmission = new Map<string, Date>();
+    // Build leaderboard with ranking
+    // Users with same longest_streak get same rank, next rank skips
+    const leaderboard: Array<{
+      rank: number;
+      userId: string;
+      streak: number; // longest_streak for ranking
+      currentStreak?: number; // current_streak for display
+    }> = [];
 
-    allSubmissions.forEach((s) => {
-      const dateStr = new Date(s.created_at).toISOString().split("T")[0];
-      const dates = userSubmissions.get(s.user_id) || [];
-      if (!dates.includes(dateStr)) {
-        dates.push(dateStr);
-      }
-      userSubmissions.set(s.user_id, dates);
+    let currentRank = 1;
+    let previousLongestStreak: number | null = null;
 
-      // Track last submission date for tiebreaker
-      const submissionDate = new Date(s.created_at);
-      const current = userLastSubmission.get(s.user_id);
-      if (!current || submissionDate > current) {
-        userLastSubmission.set(s.user_id, submissionDate);
-      }
-    });
+    for (let i = 0; i < streaks.length; i++) {
+      const streak = streaks[i];
+      const longestStreak = Number(streak.longest_streak || 0);
+      const currentStreak = Number(streak.current_streak || 0);
 
-    // Calculate streak for each user
-    const userStreaks: { odUserId: string; streak: number; lastSubmission: Date }[] = [];
-
-    // Get today's date string in YYYY-MM-DD format (UTC)
-    const todayStr = new Date().toISOString().split("T")[0];
-
-    userSubmissions.forEach((dates, odUserId) => {
-      // Sort dates descending (newest first)
-      const sortedDates = dates.sort((a, b) => b.localeCompare(a));
-
-      let streak = 0;
-      let expectedDate = todayStr;
-
-      for (const dateStr of sortedDates) {
-        if (dateStr === expectedDate) {
-          // Date matches expected, increment streak
-          streak++;
-          // Calculate previous day
-          const prevDate = new Date(expectedDate + "T00:00:00Z");
-          prevDate.setUTCDate(prevDate.getUTCDate() - 1);
-          expectedDate = prevDate.toISOString().split("T")[0];
-        } else if (dateStr < expectedDate) {
-          // Date is older than expected, streak broken
-          break;
-        }
-        // If dateStr > expectedDate, skip (future date or duplicate)
+      // If this streak is different from previous, update rank
+      if (previousLongestStreak !== null && longestStreak !== previousLongestStreak) {
+        currentRank = i + 1;
       }
 
-      userStreaks.push({
-        odUserId,
-        streak,
-        lastSubmission: userLastSubmission.get(odUserId) || new Date(),
+      leaderboard.push({
+        rank: currentRank,
+        userId: streak.user_id,
+        streak: longestStreak, // Use longest_streak for ranking
+        currentStreak: currentStreak, // Include current_streak for display
       });
-    });
 
-    // Sort by streak descending, then by last submission date ascending for tiebreaker
-    // Earlier last submission = achieved streak first = higher rank
-    const leaderboard = userStreaks
-      .sort((a, b) => {
-        // Primary: higher streak first
-        if (b.streak !== a.streak) {
-          return b.streak - a.streak;
-        }
-        // Tiebreaker: earlier last submission wins (achieved streak first)
-        return a.lastSubmission.getTime() - b.lastSubmission.getTime();
-      })
-      .slice(0, limit)
-      .map((entry, index) => ({
-        rank: index + 1,
-        userId: entry.odUserId,
-        streak: entry.streak,
-      }));
+      previousLongestStreak = longestStreak;
+    }
 
     return {
       success: true,
@@ -504,34 +618,20 @@ export const getUserProfileStats = async (userId: string) => {
         .map((s) => s.challenge_id)
     ).size;
 
-    // Calculate day streak (consecutive days with submissions from today backwards)
-    let dayStreak = 0;
-    if (userSubmissions && userSubmissions.length > 0) {
-      // Get unique dates in YYYY-MM-DD format (UTC)
-      const submissionDates = Array.from(new Set(
-        userSubmissions.map((s) =>
-          new Date(s.created_at).toISOString().split('T')[0]
-        )
-      )).sort((a, b) => b.localeCompare(a)); // Sort descending (newest first)
+    // Get streak from streaks table
+    const { data: streakData, error: streakError } = await supabase
+      .from("streaks")
+      .select("current_streak, longest_streak")
+      .eq("user_id", userId)
+      .single();
 
-      // Get today's date string in YYYY-MM-DD format (UTC)
-      const todayStr = new Date().toISOString().split("T")[0];
-      let expectedDate = todayStr;
+    // Default to 0 if no streak record exists
+    const currentStreak = streakData?.current_streak ? Number(streakData.current_streak) : 0;
+    const longestStreak = streakData?.longest_streak ? Number(streakData.longest_streak) : 0;
 
-      for (const dateStr of submissionDates) {
-        if (dateStr === expectedDate) {
-          // Date matches expected, increment streak
-          dayStreak++;
-          // Calculate previous day
-          const prevDate = new Date(expectedDate + "T00:00:00Z");
-          prevDate.setUTCDate(prevDate.getUTCDate() - 1);
-          expectedDate = prevDate.toISOString().split("T")[0];
-        } else if (dateStr < expectedDate) {
-          // Date is older than expected, streak broken
-          break;
-        }
-        // If dateStr > expectedDate, skip (future date or duplicate)
-      }
+    if (streakError && streakError.code !== "PGRST116") {
+      // Log error only if it's not a "not found" error
+      console.error("Error fetching streak:", streakError);
     }
 
     // Get global rank and total score using the shared function
@@ -555,7 +655,8 @@ export const getUserProfileStats = async (userId: string) => {
       stats: {
         globalRank,
         completedChallenges,
-        dayStreak,
+        currentStreak,
+        longestStreak,
         avgAccuracy,
         avgCodeLength,
         totalScore,

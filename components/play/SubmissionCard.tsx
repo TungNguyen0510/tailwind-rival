@@ -11,12 +11,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import MonacoEditor from "@monaco-editor/react";
 import { useTheme } from "next-themes";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { getAccuracyColor } from "@/utils/utils";
+import MonacoEditor from "@/components/ui/MonacoEditor";
 
 /**
  * Card component that displays a single submission with its details.
