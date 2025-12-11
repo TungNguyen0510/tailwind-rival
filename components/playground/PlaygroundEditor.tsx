@@ -1,24 +1,45 @@
 "use client";
 
-import MonacoEditor from "@/components/ui/MonacoEditor"
+import MonacoEditor from "@/components/ui/MonacoEditor";
 
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import useKeyHold from "@/hooks/useKeyHold";
 import { usePlaygroundContext } from "@/context/PlaygroudContextProvider";
+import { Spinner } from "@/components/ui/spinner";
 
 const PlaygroundEditor = () => {
   const { theme } = useTheme();
-  const { playground, setPlayground } = usePlaygroundContext();
+  const { playground, setPlayground, isHydrated } = usePlaygroundContext();
 
   const isCtrlHeld = useKeyHold("Ctrl");
   const isShiftHeld = useKeyHold("Shift");
 
   const changeHandler = (value: string | undefined) => {
-    value = value ?? "";
-    localStorage.setItem(`playground`, value);
-    setPlayground(value);
+    // Block writes until hydration to avoid overwriting storage with defaults.
+    if (!isHydrated) return;
+
+    const nextValue = value ?? "";
+    localStorage.setItem(`playground`, nextValue);
+    setPlayground(nextValue);
   };
+
+  if (!isHydrated) {
+    // Delay mounting Monaco until storage hydration completes to avoid default flash/overwrite.
+    return (
+      <div className="flex flex-col h-full">
+        <div className="flex items-center justify-between p-1 px-4 border-b bg-accent">
+          <div className="flex gap-3 items-center">
+            <span className="font-medium">Editor</span>
+          </div>
+          <span className="text-sm text-muted-foreground">Loading…</span>
+        </div>
+        <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
+          <Spinner className="size-6" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">

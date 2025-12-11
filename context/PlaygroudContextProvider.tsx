@@ -19,22 +19,29 @@ type ProviderProps = { children: React.ReactNode };
 type PlaygroundContext = {
   playground: string;
   setPlayground: Dispatch<SetStateAction<string>>;
+  /**
+   * Signals that initial value has been loaded so consumers can avoid
+   * overwriting storage with defaults while hydrating.
+   */
+  isHydrated: boolean;
 };
 
 const PlaygroundContextProvider = ({ children }: ProviderProps) => {
   const [playground, setPlayground] = useState<string>(playgroundDefaultHtml);
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  const context = { playground, setPlayground };
+  const context = { playground, setPlayground, isHydrated };
 
   useEffect(() => {
     const storedCode = localStorage.getItem(`playground`);
+    const initialCode = storedCode ?? playgroundDefaultHtml;
 
     if (!storedCode) {
       localStorage.setItem(`playground`, playgroundDefaultHtml);
-      return;
     }
 
-    setPlayground(storedCode);
+    setPlayground(initialCode);
+    setIsHydrated(true);
 
     const storageUpdateHandler = (e: StorageEvent) => {
       if (e.key !== `playground`) return;

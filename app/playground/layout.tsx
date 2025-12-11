@@ -5,10 +5,12 @@ const ogImageUrl = `${defaultUrl}/api/og/home`;
 export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Playground - Tailwind Rival",
-  description: "The playground to create and download your TailwindCSS designs!",
+  description:
+    "The playground to create and download your TailwindCSS designs!",
   openGraph: {
     title: "Playground - Tailwind Rival",
-    description: "The playground to create and download your TailwindCSS designs!",
+    description:
+      "The playground to create and download your TailwindCSS designs!",
     url: "/playground",
     siteName: "Tailwind Rival",
     type: "website",
@@ -23,12 +25,17 @@ export const metadata = {
   },
   twitter: {
     title: "Playground - Tailwind Rival",
-    description: "The playground to create and download your TailwindCSS designs!",
+    description:
+      "The playground to create and download your TailwindCSS designs!",
     card: "summary_large_image",
     images: [ogImageUrl],
   },
 };
 
-export default function PlaygroundLayout({ children }: { children: React.ReactNode }) {
+export default function PlaygroundLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return children;
 }

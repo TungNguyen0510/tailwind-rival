@@ -19,22 +19,29 @@ type ProviderProps = { children: React.ReactNode; id: string };
 type PlayContext = {
   play: string;
   setPlay: Dispatch<SetStateAction<string>>;
+  /**
+   * Indicates initial value is loaded from localStorage/defaults so consumers
+   * can avoid writing stale defaults back.
+   */
+  isHydrated: boolean;
 };
 
 const PlayContextProvider = ({ children, id }: ProviderProps) => {
   const [play, setPlay] = useState<string>(playDefaultHtml);
+  const [isHydrated, setIsHydrated] = useState(false);
 
-  const context = { play, setPlay };
+  const context = { play, setPlay, isHydrated };
 
   useEffect(() => {
     const storedCode = localStorage.getItem(`play-${id}`);
+    const initialCode = storedCode ?? playDefaultHtml;
 
     if (!storedCode) {
       localStorage.setItem(`play-${id}`, playDefaultHtml);
-      return;
     }
 
-    setPlay(storedCode);
+    setPlay(initialCode);
+    setIsHydrated(true);
 
     const storageUpdateHandler = (e: StorageEvent) => {
       if (e.key !== `play-${id}`) return;
@@ -49,7 +56,7 @@ const PlayContextProvider = ({ children, id }: ProviderProps) => {
 
     return () =>
       window.removeEventListener("storage", debouncedStorageUpdateHandler);
-  }, []);
+  }, [id]);
 
   return (
     <playContext.Provider value={context}>{children}</playContext.Provider>
